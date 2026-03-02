@@ -51,6 +51,32 @@
     }
     .cdc-badge.tiene { background: var(--blue-bg);  border-color: var(--blue-chip);  color: var(--blue); }
     .cdc-badge.falta { background: var(--surface2); border-color: var(--border2);    color: var(--muted2); }
+
+    /* ── Wizard ── */
+    .wz-bar {
+      display: flex; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden; margin-bottom: 24px;
+    }
+    .wz-tab {
+      flex: 1; display: flex; align-items: center; gap: 8px; padding: 13px 16px;
+      font-size: 13px; font-weight: 600; color: var(--muted);
+      border-right: 1px solid var(--border); cursor: default;
+      transition: background .15s;
+    }
+    .wz-tab:last-child { border-right: none; }
+    .wz-tab.active { background: var(--brand-light); color: var(--brand); }
+    .wz-tab.done   { color: var(--brand); }
+    .wz-num {
+      width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+      background: var(--border2); color: var(--muted);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800; font-family: 'IBM Plex Mono', monospace;
+      transition: background .15s, color .15s;
+    }
+    .wz-tab.active .wz-num { background: var(--brand); color: #fff; }
+    .wz-tab.done   .wz-num { background: var(--green,#2E7D32); color: #fff; }
+    .wz-section { display: none; }
+    .wz-section.wz-visible { display: block; }
   </style>
 </head>
 <body>
@@ -180,6 +206,17 @@
         <div class="page-sub">Formulario IPP — Pre-evaluación individual</div>
       </div>
 
+      <!-- Barra de pasos wizard -->
+      <div class="wz-bar">
+        <div class="wz-tab active" id="wz-tab-1"><span class="wz-num">1</span> Datos personales</div>
+        <div class="wz-tab"        id="wz-tab-2"><span class="wz-num">2</span> Calificación IPP</div>
+        <div class="wz-tab"        id="wz-tab-3"><span class="wz-num">3</span> Carga CDC</div>
+        <div class="wz-tab"        id="wz-tab-4"><span class="wz-num">4</span> Calificación final</div>
+      </div>
+
+      <!-- PASO 1: Datos personales + Domicilio -->
+      <div class="wz-section wz-visible" id="wz-s1">
+
       <!-- Sección 1: Datos personales -->
       <div class="card" style="margin-bottom:20px">
         <div class="card-title">📋 Sección 1 — Datos personales</div>
@@ -291,6 +328,15 @@
           </div>
         </div>
       </div>
+
+      <!-- Navegación paso 1 -->
+      <div class="row" style="justify-content:flex-end;margin-bottom:4px">
+        <button class="btn btn-primary" onclick="wzIr(2)">Siguiente → Calificación IPP</button>
+      </div>
+      </div><!-- /wz-s1 -->
+
+      <!-- PASO 2: Actividad económica + Experiencia + Score -->
+      <div class="wz-section" id="wz-s2">
 
       <!-- Sección 3: Actividad económica -->
       <div class="card" style="margin-bottom:20px">
@@ -414,6 +460,15 @@
         </div>
       </div>
 
+      <!-- Navegación paso 2 -->
+      <div class="row" style="justify-content:space-between;margin-bottom:4px">
+        <button class="btn btn-secondary" onclick="wzIr(1)">← Anterior</button>
+        <button class="btn btn-primary"   onclick="wzIr(3)">Siguiente → Carga CDC</button>
+      </div>
+      </div><!-- /wz-s2 -->
+
+      <!-- PASO 3: CDC -->
+      <div class="wz-section" id="wz-s3">
 
       <!-- Sección CDC — Carga de documento -->
       <div class="card" style="margin-bottom:20px" id="cdc-card">
@@ -436,12 +491,30 @@
         </div>
       </div>
 
-      <div class="row" style="justify-content:flex-end;gap:12px">
-        <button class="btn btn-secondary" onclick="showView('prospectos')">Cancelar</button>
-        <button class="btn btn-primary" id="btn-guardar-prospecto" onclick="guardarProspecto()">
-          Guardar prospecto
-        </button>
+      <!-- Navegación paso 3 -->
+      <div class="row" style="justify-content:space-between;margin-bottom:4px">
+        <button class="btn btn-secondary" onclick="wzIr(2)">← Anterior</button>
+        <button class="btn btn-primary"   onclick="wzIr(4)">Siguiente → Calificación final</button>
       </div>
+      </div><!-- /wz-s3 -->
+
+      <!-- PASO 4: Resumen y guardar -->
+      <div class="wz-section" id="wz-s4">
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-title">📊 Resumen de calificación</div>
+        <div id="wz-resumen"></div>
+      </div>
+      <div class="row" style="justify-content:space-between;gap:12px">
+        <button class="btn btn-secondary" onclick="wzIr(3)">← Anterior</button>
+        <div class="row" style="gap:12px">
+          <button class="btn btn-secondary" onclick="showView('prospectos')">Cancelar</button>
+          <button class="btn btn-primary" id="btn-guardar-prospecto" onclick="guardarProspecto()">
+            ✅ Guardar prospecto
+          </button>
+        </div>
+      </div>
+      </div><!-- /wz-s4 -->
+
     </div>
 
     <!-- ═══ VISTA: POST-BURÓ ═══ -->
@@ -535,23 +608,34 @@
 
 <!-- MODAL: Nuevo grupo -->
 <div class="modal-overlay" id="modal-grupo">
-  <div class="modal">
+  <div class="modal" style="max-width:540px">
     <button class="modal-close" onclick="cerrarModal('modal-grupo')">✕</button>
     <div class="modal-title">Nuevo grupo</div>
-    <div class="form-grid">
-      <div class="field full">
-        <label>Nombre del grupo</label>
-        <input type="text" id="g-nombre" placeholder="Ej: Grupo Esperanza" />
-      </div>
-      <div class="field full">
-        <label>Integrantes (selecciona prospectos post-buró aprobados)</label>
-        <select id="g-integrantes" multiple style="height:160px">
+    <div class="field" style="margin-bottom:16px">
+      <label>Nombre del grupo</label>
+      <input type="text" id="g-nombre" placeholder="Ej: Grupo Esperanza" />
+    </div>
+    <div style="margin-bottom:12px">
+      <label style="font-size:12px;font-weight:600;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:8px">Agregar integrante</label>
+      <div style="display:flex;gap:8px">
+        <select id="g-select" style="flex:1;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);font-family:'IBM Plex Mono',monospace;font-size:13px">
+          <option value="">Selecciona una prospecto aprobada…</option>
         </select>
+        <button class="btn btn-secondary" onclick="gAgregar()" style="white-space:nowrap">+ Agregar</button>
       </div>
     </div>
-    <div class="row" style="justify-content:flex-end;gap:12px;margin-top:20px">
+    <div style="margin-bottom:20px">
+      <div style="font-size:12px;font-weight:600;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">
+        Integrantes: <span id="g-count" style="color:var(--brand)">0</span>
+        <span style="font-weight:400"> (mínimo 3 para consolidar)</span>
+      </div>
+      <div id="g-lista" style="display:flex;flex-direction:column;gap:8px;min-height:44px">
+        <div id="g-empty" style="color:var(--muted);font-size:13px;text-align:center;padding:12px;background:var(--surface2);border-radius:8px">Sin integrantes aún</div>
+      </div>
+    </div>
+    <div class="row" style="justify-content:flex-end;gap:12px">
       <button class="btn btn-secondary" onclick="cerrarModal('modal-grupo')">Cancelar</button>
-      <button class="btn btn-primary" onclick="crearGrupo()">Crear grupo</button>
+      <button class="btn btn-primary" id="btn-crear-grupo" onclick="crearGrupo()" disabled>Crear grupo</button>
     </div>
   </div>
 </div>
@@ -853,50 +937,94 @@ function filtrarProspectos() {
 async function verProspecto(id) {
   const { data: p } = await sb.from('prospectos').select('*').eq('id', id).single();
   if (!p) return;
+
+  // Mapas legibles
+  const UBIC = {'tienda':'Tienda','mercado':'Mercado','oficina':'Oficina','fabrica':'Fábrica','taller':'Taller','locales-comun':'Locales comunidad','kiosco':'Kiosco','puesto-fijo-tianguis':'Puesto fijo tianguis','puesto-fijo-via':'Puesto fijo vía pública','domicilio-especial':'Domicilio especial','puesto-improv-tianguis':'Puesto improvisado tianguis','puesto-improv-via':'Puesto improvisado vía','vehiculo':'Vehículo','otro-local':'Otro con local','otro-sin-local':'Otro sin local','ambulante':'Ambulante','domicilio-cliente':'Domicilio del cliente','catalogo':'Catálogo'};
+  const ANT_DOM = {'mas6':'Más de 6 años','4a6':'4 a 6 años','1a3':'1 a 3 años','menos1':'Menos de un año'};
+  const TIP_DOM = {'propia':'Propia','hipoteca':'Hipoteca/pagando','familiar':'Familiar','rentada':'Rentada/prestada'};
+  const INE_M  = {'si':'Sí coincide','no':'No coincide','sin-ine':'Sin INE actualizada'};
+  const ANT_NEG= {'mas6':'Más de 6 años','4a6':'4 a 6 años','1a3':'1 a 3 años','menos1':'Menos de un año','recien':'Apenas abrió'};
+  const EXP_G  = {'mas3':'Más de 3','2a3':'2 a 3','1':'1','ninguna':'Ninguna'};
+
+  const lbl = (t,v) => `<div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">${t}</div><div style="font-size:13px;font-weight:600">${v||'—'}</div></div>`;
+  const mono = v => `<span style="font-family:'IBM Plex Mono',monospace">${v}</span>`;
+  const flujo = (p.ingresos_semanales||0)-(p.gastos_semanales||0);
+
+  let pbHtml = '';
+  if (p.grado_postburo) {
+    const reglas = JSON.parse(p.reglas_postburo||'[]');
+    pbHtml = `<div class="divider"></div>
+    <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">📊 Post-buró</div>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:${reglas.length?'10px':'0'}">
+      ${badgeGrado(p.grado_postburo)}
+      <span style="font-weight:700;color:${p.estatus==='postburo_rechazado'?'var(--red)':'var(--green)'}">${p.estatus_postburo||'—'}</span>
+    </div>
+    ${reglas.map(r=>`<div style="font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--muted);margin-bottom:4px">• ${r}</div>`).join('')}`;
+  }
+
   document.getElementById('modal-prosp-title').textContent = p.nombre_completo;
   document.getElementById('modal-prosp-body').innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+    <div style="display:flex;align-items:center;gap:20px;background:var(--surface2);border-radius:10px;padding:16px 18px;margin-bottom:18px">
       <div>
-        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">CURP</div>
-        <div style="font-family:'IBM Plex Mono',monospace">${p.curp || '—'}</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:2px">Score IPP</div>
+        <div style="font-size:42px;font-weight:800;font-family:'IBM Plex Mono',monospace;line-height:1">${p.score_ipp??'—'}</div>
       </div>
-      <div>
-        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Teléfono</div>
-        <div style="font-family:'IBM Plex Mono',monospace">${p.telefono || '—'}</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        ${badgeGrado(p.grado_ipp)}
+        ${estatusBadge(p.estatus)}
       </div>
-      <div>
-        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Score IPP</div>
-        <div style="font-size:32px;font-weight:800;font-family:'IBM Plex Mono',monospace">${p.score_ipp}</div>
-      </div>
-      <div>
-        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Grado</div>
-        <div>${badgeGrado(p.grado_ipp)}</div>
-      </div>
+      ${p.grado_postburo?`<div style="margin-left:auto;text-align:right"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Post-buró</div>${badgeGrado(p.grado_postburo)}</div>`:''}
     </div>
+
+    <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">📋 Datos personales</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      ${lbl('CURP', mono(p.curp))}
+      ${lbl('Teléfono', mono(p.telefono))}
+      ${lbl('Fecha de nacimiento', p.fecha_nacimiento||'—')}
+      ${lbl('Entidad nacimiento', p.estado_nacimiento)}
+      ${lbl('¿Es referida?', p.es_referida?'Sí':'No')}
+    </div>
+
     <div class="divider"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13px">
-      <div><span style="color:var(--muted)">Ingresos semanales:</span> <strong>$${(p.ingresos_semanales||0).toLocaleString()}</strong></div>
-      <div><span style="color:var(--muted)">Gastos semanales:</span> <strong>$${(p.gastos_semanales||0).toLocaleString()}</strong></div>
-      <div><span style="color:var(--muted)">Capacidad pago:</span> <strong>$${(p.capacidad_pago||0).toLocaleString()}</strong></div>
-      <div><span style="color:var(--muted)">Flujo neto:</span> <strong>$${((p.ingresos_semanales||0)-(p.gastos_semanales||0)).toLocaleString()}</strong></div>
+    <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">🏠 Domicilio</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      ${lbl('Calle y número', (p.calle||'—')+' '+(p.numero_exterior||'')+(p.numero_interior?' Int.'+p.numero_interior:''))}
+      ${lbl('Colonia', p.colonia)}
+      ${lbl('Municipio/Alcaldía', p.municipio)}
+      ${lbl('Estado', p.estado)}
+      ${lbl('C.P.', mono(p.codigo_postal))}
     </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+      ${lbl('Antigüedad domicilio', ANT_DOM[p.antiguedad_domicilio])}
+      ${lbl('Tipo domicilio', TIP_DOM[p.tipo_domicilio])}
+      ${lbl('Coincidencia INE', INE_M[p.coincidencia_ine])}
+    </div>
+
     <div class="divider"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13px">
-      <div><span style="color:var(--muted)">Negocio:</span> ${p.antiguedad_negocio || '—'}</div>
-      <div><span style="color:var(--muted)">Ubicación:</span> ${p.ubicacion_negocio || '—'}</div>
-      <div><span style="color:var(--muted)">Exp. grupal:</span> ${p.exp_grupal || '—'}</div>
-      <div><span style="color:var(--muted)">¿Referida?:</span> ${p.es_referida ? 'Sí' : 'No'}</div>
+    <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">💼 Actividad económica</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      ${lbl('Antigüedad negocio', ANT_NEG[p.antiguedad_negocio])}
+      ${lbl('Ubicación negocio', UBIC[p.ubicacion_negocio])}
     </div>
-    ${p.grado_postburo ? `
-      <div class="divider"></div>
-      <div><span style="color:var(--muted);font-size:12px">POST-BURÓ:</span>
-        ${badgeGrado(p.grado_postburo)}
-        <span style="margin-left:8px">${estatusBadge(p.estatus)}</span>
-      </div>
-      ${p.reglas_postburo ? `<div style="margin-top:8px;font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--muted)">
-        ${JSON.parse(p.reglas_postburo||'[]').map(r => `<div>• ${r}</div>`).join('')}
-      </div>` : ''}
-    ` : ''}
+
+    <div class="divider"></div>
+    <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">💰 Finanzas</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+      ${lbl('Ingresos/sem', mono('$'+(p.ingresos_semanales||0).toLocaleString()))}
+      ${lbl('Gastos/sem', mono('$'+(p.gastos_semanales||0).toLocaleString()))}
+      ${lbl('Flujo neto', mono('$'+flujo.toLocaleString()))}
+      ${lbl('Cap. pago/sem', mono('$'+(p.capacidad_pago||0).toLocaleString()))}
+    </div>
+
+    <div class="divider"></div>
+    <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">💳 Experiencia crediticia</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      ${lbl('Créditos grupales', EXP_G[p.exp_grupal])}
+      ${lbl('Otros créditos', p.otros_creditos>=2?'2 o más tipos':p.otros_creditos==1?'1 tipo':'Ninguno')}
+    </div>
+
+    ${pbHtml}
+
     <div class="divider"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
       <div>
@@ -904,12 +1032,12 @@ async function verProspecto(id) {
         ${p.cdc_path
           ? `<div style="display:flex;align-items:center;gap:10px">
                <span class="cdc-badge tiene">📄 Subido</span>
-               <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)">${p.cdc_nombre || ''}</span>
+               <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)">${p.cdc_nombre||''}</span>
                <a href="#" onclick="descargarCDC('${p.cdc_path}','${p.cdc_nombre||'cdc'}');return false;" style="font-size:12px;color:var(--brand)">Descargar</a>
              </div>`
           : `<span class="cdc-badge falta">Sin CDC</span>`}
       </div>
-      <button class="btn btn-secondary btn-sm" onclick="cerrarModal('modal-prospecto');abrirSubirCDC('${p.id}','${p.nombre_completo}',${!!p.cdc_path})">
+      <button class="btn btn-secondary btn-sm" onclick="cerrarModal('modal-prospecto');abrirSubirCDC('${p.id}','${p.nombre_completo.replace(/'/g,"\\'")}',${!!p.cdc_path})">
         ${p.cdc_path ? '🔄 Reemplazar CDC' : '📤 Subir CDC'}
       </button>
     </div>
@@ -1225,42 +1353,94 @@ async function cargarGrupos() {
   }).join('');
 }
 
+// ── Estado grupo en formación ──────────────────────────────
+let gPool = [];       // prospectos disponibles cargados de BD
+let gSel  = [];       // [{id, nombre, grado}] seleccionados
+
 async function abrirModalNuevoGrupo() {
   const { data } = await sb.from('prospectos')
     .select('id, nombre_completo, grado_postburo')
     .eq('estatus', 'postburo_aprobado');
-
-  const sel = document.getElementById('g-integrantes');
-  sel.innerHTML = '';
-  (data || []).forEach(p => {
-    const opt = document.createElement('option');
-    opt.value = p.id;
-    opt.textContent = `${p.nombre_completo} (${p.grado_postburo})`;
-    sel.appendChild(opt);
-  });
+  gPool = data || [];
+  gSel  = [];
+  document.getElementById('g-nombre').value = '';
+  document.getElementById('btn-crear-grupo').disabled = true;
+  gRenderSelect();
+  gRenderLista();
   abrirModal('modal-grupo');
+}
+
+function gRenderSelect() {
+  const usados = new Set(gSel.map(i => i.id));
+  const sel = document.getElementById('g-select');
+  sel.innerHTML = '<option value="">Selecciona una prospecto aprobada…</option>';
+  gPool.filter(p => !usados.has(p.id)).forEach(p => {
+    const o = document.createElement('option');
+    o.value = p.id;
+    o.textContent = p.nombre_completo + ' (' + (p.grado_postburo||'—') + ')';
+    sel.appendChild(o);
+  });
+}
+
+function gAgregar() {
+  const sel = document.getElementById('g-select');
+  const id = sel.value;
+  if (!id) { toast('Selecciona una prospecto primero', 'warn'); return; }
+  const p = gPool.find(x => x.id === id);
+  if (!p) return;
+  gSel.push({ id: p.id, nombre: p.nombre_completo, grado: p.grado_postburo });
+  gRenderSelect();
+  gRenderLista();
+}
+
+function gQuitar(id) {
+  gSel = gSel.filter(i => i.id !== id);
+  gRenderSelect();
+  gRenderLista();
+}
+
+function gRenderLista() {
+  const lista  = document.getElementById('g-lista');
+  const count  = document.getElementById('g-count');
+  const btnOk  = document.getElementById('btn-crear-grupo');
+  count.textContent = gSel.length;
+  btnOk.disabled = gSel.length < 3;
+  if (!gSel.length) {
+    lista.innerHTML = '<div id="g-empty" style="color:var(--muted);font-size:13px;text-align:center;padding:12px;background:var(--surface2);border-radius:8px">Sin integrantes aún</div>';
+    return;
+  }
+  lista.innerHTML = gSel.map(i =>
+    `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:13px;font-weight:600">${i.nombre}</span>
+        ${badgeGrado(i.grado)}
+      </div>
+      <button onclick="gQuitar('${i.id}')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:18px;line-height:1;padding:2px 6px" title="Quitar">✕</button>
+    </div>`
+  ).join('');
 }
 
 async function crearGrupo() {
   const nombre = document.getElementById('g-nombre').value.trim();
-  const integrantes = Array.from(document.getElementById('g-integrantes').selectedOptions).map(o => o.value);
   if (!nombre) { toast('Nombre del grupo requerido', 'error'); return; }
-  if (integrantes.length < 3) { toast('Mínimo 3 integrantes', 'error'); return; }
+  if (gSel.length < 3) { toast('Mínimo 3 integrantes para consolidar el grupo', 'error'); return; }
 
+  const btn = document.getElementById('btn-crear-grupo');
+  btn.disabled = true; btn.textContent = 'Creando…';
+
+  const ids = gSel.map(i => i.id);
   const { data: grupo, error } = await sb.from('grupos').insert({
-    nombre, num_integrantes: integrantes.length, estatus: 'formado', created_by: currentUser.id
+    nombre, num_integrantes: ids.length, estatus: 'formado', created_by: currentUser.id
   }).select().single();
 
-  if (error) { toast('Error creando grupo: ' + error.message, 'error'); return; }
+  if (error) { toast('Error creando grupo: ' + error.message, 'error'); btn.disabled=false; btn.textContent='Crear grupo'; return; }
 
-  // Asignar integrantes
-  await sb.from('integrantes').insert(integrantes.map(pid => ({ grupo_id: grupo.id, prospecto_id: pid })));
+  await sb.from('integrantes').insert(ids.map(pid => ({ grupo_id: grupo.id, prospecto_id: pid })));
+  await sb.from('prospectos').update({ estatus: 'en_grupo' }).in('id', ids);
 
-  // Actualizar estatus de prospectos
-  await sb.from('prospectos').update({ estatus: 'en_grupo' }).in('id', integrantes);
-
-  toast(`Grupo "${nombre}" creado con ${integrantes.length} integrantes`);
+  toast(`Grupo "${nombre}" creado con ${ids.length} integrantes`);
   cerrarModal('modal-grupo');
+  btn.disabled=false; btn.textContent='Crear grupo';
   cargarGrupos();
 }
 
@@ -1353,6 +1533,72 @@ async function cargarTablaAsignaciones() {
     `;
   }).join('');
 }
+
+// ── Wizard — navegación entre pasos ──────────────────────
+// showView() original no se modifica. El wizard solo controla
+// las secciones internas del formulario nuevo-prospecto.
+
+function wzIr(paso) {
+  // Mostrar sección correcta
+  [1,2,3,4].forEach(n => {
+    const s = document.getElementById('wz-s'+n);
+    if (s) s.classList.toggle('wz-visible', n === paso);
+    const t = document.getElementById('wz-tab-'+n);
+    if (t) {
+      t.classList.remove('active','done');
+      if (n === paso) t.classList.add('active');
+      else if (n < paso) t.classList.add('done');
+    }
+  });
+  // Al llegar al paso 4 renderizar resumen
+  if (paso === 4) wzResumen();
+  // Scroll al top del form
+  const v = document.getElementById('view-nuevo-prospecto');
+  if (v) v.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function wzResumen() {
+  const d = leerFormulario();
+  const camposOk = d.antiguedad_domicilio && d.tipo_domicilio && d.coincidencia_ine &&
+                   d.antiguedad_negocio && d.ubicacion_negocio && d.exp_grupal;
+  const nombre = [
+    document.getElementById('f-nombres').value,
+    document.getElementById('f-ap-pat').value,
+    document.getElementById('f-ap-mat').value
+  ].filter(Boolean).join(' ');
+  const curp = document.getElementById('f-curp').value;
+  const colores = { A:'var(--green)', B:'var(--purple)', C:'var(--yellow-chip)', D:'var(--red)' };
+
+  let scoreHtml = '<div style="color:var(--muted);font-size:13px">Completa los campos de scoring para ver el resultado.</div>';
+  if (camposOk) {
+    const { score, grado } = calcularIPP(d);
+    const desc = {A:'Perfil excelente',B:'Perfil bueno',C:'Perfil con reservas',D:'⚠️ Perfil insuficiente — Grado D'}[grado]||'';
+    scoreHtml =
+      `<div style="display:flex;align-items:center;gap:20px;background:var(--surface2);border-radius:10px;padding:14px 18px;margin-bottom:14px">
+        <div style="font-size:44px;font-weight:800;font-family:'IBM Plex Mono',monospace;line-height:1;color:${colores[grado]}">${score}</div>
+        <div>${badgeGrado(grado)}<div style="font-size:13px;color:var(--muted);margin-top:6px">${desc}</div></div>
+      </div>`;
+  }
+
+  document.getElementById('wz-resumen').innerHTML = scoreHtml +
+    `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px">
+      <div><span style="color:var(--muted)">Nombre:</span> <strong>${nombre||'—'}</strong></div>
+      <div><span style="color:var(--muted)">CURP:</span> <span style="font-family:'IBM Plex Mono',monospace">${curp||'—'}</span></div>
+      <div><span style="color:var(--muted)">Ingresos:</span> <strong>$${parseFloat(document.getElementById('f-ingresos').value||0).toLocaleString()}/sem</strong></div>
+      <div><span style="color:var(--muted)">Cap. pago:</span> <strong>$${parseFloat(document.getElementById('f-capacidad').value||0).toLocaleString()}/sem</strong></div>
+      <div><span style="color:var(--muted)">CDC adjunto:</span> <strong>${cdcFileNuevo ? '✅ '+cdcFileNuevo.name : 'Sin archivo'}</strong></div>
+    </div>`;
+}
+
+// Al navegar a nuevo-prospecto: siempre empieza en paso 1
+const _showViewOrig = showView;
+window.showView = function(v) {
+  _showViewOrig(v);
+  if (v === 'nuevo-prospecto') {
+    wzIr(1);
+  }
+};
+
 </script>
 </body>
 </html>
