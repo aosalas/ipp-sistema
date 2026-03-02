@@ -51,31 +51,6 @@
     }
     .cdc-badge.tiene { background: var(--blue-bg);  border-color: var(--blue-chip);  color: var(--blue); }
     .cdc-badge.falta { background: var(--surface2); border-color: var(--border2);    color: var(--muted2); }
-
-    /* ── Wizard steps ── */
-    .wz-step {
-      flex: 1; display: flex; align-items: center; gap: 8px;
-      padding: 14px 16px; cursor: pointer;
-      border-right: 1px solid var(--border);
-      transition: background 0.15s;
-      font-size: 13px; font-weight: 600; color: var(--muted);
-    }
-    .wz-step:last-child { border-right: none; }
-    .wz-step:hover { background: var(--surface2); }
-    .wz-step.active { background: var(--brand-light); color: var(--brand); }
-    .wz-step.done { color: var(--brand); }
-    .wz-num {
-      width: 24px; height: 24px; border-radius: 50%;
-      background: var(--border2); color: var(--muted);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 800; font-family: 'IBM Plex Mono', monospace;
-      flex-shrink: 0; transition: background 0.15s, color 0.15s;
-    }
-    .wz-step.active .wz-num { background: var(--brand); color: #fff; }
-    .wz-step.done .wz-num { background: var(--green); color: #fff; }
-    .wz-label { white-space: nowrap; }
-    .wz-paso { animation: fadeIn 0.2s ease; }
-    @media (max-width: 600px) { .wz-label { display: none; } }
   </style>
 </head>
 <body>
@@ -198,313 +173,274 @@
       </div>
     </div>
 
-    <!-- ═══ VISTA: NUEVO PROSPECTO — Wizard 4 pasos ═══ -->
+    <!-- ═══ VISTA: NUEVO PROSPECTO (formulario IPP completo) ═══ -->
     <div id="view-nuevo-prospecto" class="view fade-in" style="display:none">
-      <div class="page-header flex-between">
-        <div>
-          <div class="page-title">Nuevo prospecto</div>
-          <div class="page-sub">Formulario IPP — Pre-evaluación individual</div>
-        </div>
-        <button class="btn btn-secondary btn-sm" onclick="showView('prospectos')">✕ Cancelar</button>
+      <div class="page-header">
+        <div class="page-title">Nuevo prospecto</div>
+        <div class="page-sub">Formulario IPP — Pre-evaluación individual</div>
       </div>
 
-      <!-- Indicador de pasos -->
-      <div style="display:flex;align-items:center;gap:0;margin-bottom:28px;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden">
-        <div class="wz-step active" id="wz-tab-1" onclick="wzIr(1)">
-          <span class="wz-num">1</span><span class="wz-label">Datos personales</span>
-        </div>
-        <div class="wz-step" id="wz-tab-2" onclick="wzIr(2)">
-          <span class="wz-num">2</span><span class="wz-label">Calificación IPP</span>
-        </div>
-        <div class="wz-step" id="wz-tab-3" onclick="wzIr(3)">
-          <span class="wz-num">3</span><span class="wz-label">Carga CDC</span>
-        </div>
-        <div class="wz-step" id="wz-tab-4" onclick="wzIr(4)">
-          <span class="wz-num">4</span><span class="wz-label">Calificación final</span>
-        </div>
-      </div>
-
-      <!-- ── PASO 1: Datos personales ── -->
-      <div id="wz-paso-1" class="wz-paso">
-        <div class="card" style="margin-bottom:20px">
-          <div class="card-title">📋 Datos personales</div>
-          <div class="form-grid">
-            <div class="field">
-              <label>Nombre(s)</label>
-              <input type="text" id="f-nombres" placeholder="Ej: Saira Ines" />
-            </div>
-            <div class="field">
-              <label>Apellido paterno</label>
-              <input type="text" id="f-ap-pat" />
-            </div>
-            <div class="field">
-              <label>Apellido materno</label>
-              <input type="text" id="f-ap-mat" />
-            </div>
-            <div class="field">
-              <label>CURP</label>
-              <input type="text" id="f-curp" placeholder="18 caracteres" maxlength="18"
-                oninput="this.value=this.value.toUpperCase()" />
-            </div>
-            <div class="field">
-              <label>Fecha de nacimiento</label>
-              <input type="date" id="f-fnac" />
-            </div>
-            <div class="field">
-              <label>Entidad de nacimiento</label>
-              <select id="f-estado-nac"></select>
-            </div>
-            <div class="field">
-              <label>Teléfono</label>
-              <input type="tel" id="f-telefono" placeholder="10 dígitos" maxlength="10" />
-            </div>
-            <div class="field">
-              <label>Confirmar teléfono</label>
-              <input type="tel" id="f-telefono2" placeholder="10 dígitos" maxlength="10" />
-            </div>
-            <div class="field">
-              <label>¿Es referida?</label>
-              <select id="f-referida">
-                <option value="false">No</option>
-                <option value="true">Sí</option>
-              </select>
-            </div>
+      <!-- Sección 1: Datos personales -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-title">📋 Sección 1 — Datos personales</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Nombre(s)</label>
+            <input type="text" id="f-nombres" placeholder="Ej: Saira Ines" />
           </div>
-        </div>
-        <div class="card" style="margin-bottom:20px">
-          <div class="card-title">🏠 Dirección y estabilidad residencial</div>
-          <div class="form-grid">
-            <div class="field">
-              <label>Calle</label>
-              <input type="text" id="f-calle" />
-            </div>
-            <div class="field">
-              <label>No. exterior</label>
-              <input type="text" id="f-next" />
-            </div>
-            <div class="field">
-              <label>No. interior</label>
-              <input type="text" id="f-nint" placeholder="Opcional" />
-            </div>
-            <div class="field">
-              <label>Código postal</label>
-              <input type="text" id="f-cp" maxlength="5" />
-            </div>
-            <div class="field">
-              <label>Colonia / Población</label>
-              <input type="text" id="f-colonia" />
-            </div>
-            <div class="field">
-              <label>Alcaldía / Municipio</label>
-              <input type="text" id="f-municipio" />
-            </div>
-            <div class="field">
-              <label>Estado</label>
-              <select id="f-estado"></select>
-            </div>
-            <div class="field">
-              <label>Antigüedad del domicilio ⚡</label>
-              <select id="f-ant-dom">
-                <option value="">Selecciona…</option>
-                <option value="mas6">Más de 6 años</option>
-                <option value="4a6">4 a 6 años</option>
-                <option value="1a3">1 a 3 años</option>
-                <option value="menos1">Menos de un año</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Tipo de domicilio ⚡</label>
-              <select id="f-tipo-dom">
-                <option value="">Selecciona…</option>
-                <option value="propia">Propia</option>
-                <option value="hipoteca">Hipoteca o pagando</option>
-                <option value="familiar">Familiar</option>
-                <option value="rentada">Rentada o prestada</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Coincidencia INE-domicilio ⚡</label>
-              <select id="f-ine">
-                <option value="">Selecciona…</option>
-                <option value="si">Sí coincide</option>
-                <option value="no">No coincide</option>
-                <option value="sin-ine">No cuenta con INE actualizada</option>
-              </select>
-            </div>
+          <div class="field">
+            <label>Apellido paterno</label>
+            <input type="text" id="f-ap-pat" />
           </div>
-        </div>
-        <div class="row" style="justify-content:flex-end">
-          <button class="btn btn-primary" onclick="wzSiguiente(1)">Siguiente → Calificación IPP</button>
+          <div class="field">
+            <label>Apellido materno</label>
+            <input type="text" id="f-ap-mat" />
+          </div>
+          <div class="field">
+            <label>CURP</label>
+            <input type="text" id="f-curp" placeholder="18 caracteres" maxlength="18"
+              oninput="this.value=this.value.toUpperCase()" />
+          </div>
+          <div class="field">
+            <label>Fecha de nacimiento</label>
+            <input type="date" id="f-fnac" />
+          </div>
+          <div class="field">
+            <label>Entidad de nacimiento</label>
+            <select id="f-estado-nac"></select>
+          </div>
+          <div class="field">
+            <label>Teléfono</label>
+            <input type="tel" id="f-telefono" placeholder="10 dígitos" maxlength="10" />
+          </div>
+          <div class="field">
+            <label>Confirmar teléfono</label>
+            <input type="tel" id="f-telefono2" placeholder="10 dígitos" maxlength="10" />
+          </div>
+          <div class="field">
+            <label>¿Es referida?</label>
+            <select id="f-referida">
+              <option value="false">No</option>
+              <option value="true">Sí</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      <!-- ── PASO 2: Calificación IPP ── -->
-      <div id="wz-paso-2" class="wz-paso" style="display:none">
-        <div class="card" style="margin-bottom:20px">
-          <div class="card-title">💼 Actividad económica y finanzas</div>
-          <div class="form-grid">
-            <div class="field">
-              <label>Antigüedad del negocio ⚡</label>
-              <select id="f-ant-neg">
-                <option value="">Selecciona…</option>
-                <option value="mas6">Más de 6 años</option>
-                <option value="4a6">4 a 6 años</option>
-                <option value="1a3">1 a 3 años</option>
-                <option value="menos1">Menos de un año</option>
-                <option value="recien">Apenas abrió negocio</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Ubicación del negocio ⚡</label>
-              <select id="f-ubic-neg">
-                <option value="">Selecciona…</option>
-                <optgroup label="Tier Alto (13 pts)">
-                  <option value="tienda">Tienda</option>
-                  <option value="mercado">Mercado</option>
-                  <option value="oficina">Oficina</option>
-                  <option value="fabrica">Fábrica</option>
-                  <option value="taller">Taller</option>
-                </optgroup>
-                <optgroup label="Tier Medio (9 pts)">
-                  <option value="locales-comun">Locales en comunidad</option>
-                  <option value="kiosco">Kiosco</option>
-                  <option value="puesto-fijo-tianguis">Puesto fijo tianguis</option>
-                  <option value="puesto-fijo-via">Puesto fijo vía pública</option>
-                  <option value="domicilio-especial">Domicilio especial</option>
-                </optgroup>
-                <optgroup label="Tier Bajo (5 pts)">
-                  <option value="puesto-improv-tianguis">Puesto improvisado tianguis</option>
-                  <option value="puesto-improv-via">Puesto improvisado vía pública</option>
-                  <option value="vehiculo">Vehículo</option>
-                  <option value="otro-local">Otro con local</option>
-                  <option value="otro-sin-local">Otro sin local</option>
-                  <option value="ambulante">Ambulante</option>
-                  <option value="domicilio-cliente">Domicilio del cliente</option>
-                  <option value="catalogo">Catálogo</option>
-                </optgroup>
-              </select>
-            </div>
-            <div class="field">
-              <label>Ingresos semanales ($) ⚡</label>
-              <input type="number" id="f-ingresos" placeholder="0.00" min="0" oninput="calcularScore()" />
-            </div>
-            <div class="field">
-              <label>Gastos semanales ($) ⚡</label>
-              <input type="number" id="f-gastos" placeholder="0.00" min="0" oninput="calcularScore()" />
-            </div>
-            <div class="field">
-              <label>Capacidad de pago semanal ($) ⚡</label>
-              <input type="number" id="f-capacidad" placeholder="0.00" min="0" oninput="calcularScore()" />
-            </div>
+      <!-- Sección 2: Domicilio -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-title">🏠 Sección 2 — Dirección y estabilidad residencial</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Calle</label>
+            <input type="text" id="f-calle" />
           </div>
-        </div>
-        <div class="card" style="margin-bottom:20px">
-          <div class="card-title">💳 Experiencia crediticia</div>
-          <div class="form-grid">
-            <div class="field">
-              <label>Experiencia con créditos grupales ⚡</label>
-              <select id="f-exp-grupal">
-                <option value="">Selecciona…</option>
-                <option value="ninguna">Ninguna</option>
-                <option value="1">1</option>
-                <option value="2a3">2 a 3</option>
-                <option value="mas3">Más de 3</option>
-              </select>
-            </div>
-            <div class="field full">
-              <label>Otros tipos de crédito formal ⚡ (selección múltiple)</label>
-              <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;" id="otros-creditos">
-                <label class="chip" style="cursor:pointer">
-                  <input type="checkbox" value="personal" style="width:auto;padding:0" /> Personal
-                </label>
-                <label class="chip" style="cursor:pointer">
-                  <input type="checkbox" value="departamental" style="width:auto;padding:0" /> Departamental
-                </label>
-                <label class="chip" style="cursor:pointer">
-                  <input type="checkbox" value="nomina" style="width:auto;padding:0" /> Nómina
-                </label>
-                <label class="chip" style="cursor:pointer">
-                  <input type="checkbox" value="hipotecario" style="width:auto;padding:0" /> Hipotecario
-                </label>
-                <label class="chip" style="cursor:pointer">
-                  <input type="checkbox" value="auto" style="width:auto;padding:0" /> Auto/moto
-                </label>
-              </div>
-            </div>
+          <div class="field">
+            <label>No. exterior</label>
+            <input type="text" id="f-next" />
           </div>
-        </div>
-        <!-- Score en tiempo real -->
-        <div class="card" style="margin-bottom:20px" id="score-card">
-          <div class="card-title">🧮 Score IPP calculado</div>
-          <div class="score-display">
-            <div>
-              <div class="score-num" id="score-num">—</div>
-              <div id="grado-badge" style="margin-top:8px"></div>
-            </div>
-            <div class="score-bar-wrap">
-              <div class="score-bar">
-                <div class="score-bar-fill" id="score-fill" style="width:0;background:var(--brand)"></div>
-              </div>
-              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)" id="score-desc">
-                Completa los campos marcados con ⚡ para calcular el score
-              </div>
-            </div>
+          <div class="field">
+            <label>No. interior</label>
+            <input type="text" id="f-nint" placeholder="Opcional" />
           </div>
-          <div id="block-alert" style="display:none">
-            <div class="alert alert-danger">
-              <span class="alert-icon">🚫</span>
-              <div><strong>BLOQUEO PRE-BURÓ:</strong> Grado D. No se procede a consulta CDC.</div>
-            </div>
+          <div class="field">
+            <label>Código postal</label>
+            <input type="text" id="f-cp" maxlength="5" />
           </div>
-        </div>
-        <div class="row" style="justify-content:space-between">
-          <button class="btn btn-secondary" onclick="wzIr(1)">← Anterior</button>
-          <button class="btn btn-primary" onclick="wzSiguiente(2)">Siguiente → Carga CDC</button>
+          <div class="field">
+            <label>Colonia / Población</label>
+            <input type="text" id="f-colonia" />
+          </div>
+          <div class="field">
+            <label>Alcaldía / Municipio</label>
+            <input type="text" id="f-municipio" />
+          </div>
+          <div class="field">
+            <label>Estado</label>
+            <select id="f-estado"></select>
+          </div>
+          <!-- SCORING -->
+          <div class="field">
+            <label>Antigüedad del domicilio ⚡</label>
+            <select id="f-ant-dom">
+              <option value="">Selecciona…</option>
+              <option value="mas6">Más de 6 años</option>
+              <option value="4a6">4 a 6 años</option>
+              <option value="1a3">1 a 3 años</option>
+              <option value="menos1">Menos de un año</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Tipo de domicilio ⚡</label>
+            <select id="f-tipo-dom">
+              <option value="">Selecciona…</option>
+              <option value="propia">Propia</option>
+              <option value="hipoteca">Hipoteca o pagando</option>
+              <option value="familiar">Familiar</option>
+              <option value="rentada">Rentada o prestada</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Coincidencia INE-domicilio ⚡</label>
+            <select id="f-ine">
+              <option value="">Selecciona…</option>
+              <option value="si">Sí coincide</option>
+              <option value="no">No coincide</option>
+              <option value="sin-ine">No cuenta con INE actualizada</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      <!-- ── PASO 3: Carga CDC ── -->
-      <div id="wz-paso-3" class="wz-paso" style="display:none">
-        <div class="card" style="margin-bottom:20px" id="cdc-card">
-          <div class="card-title">📄 Documento CDC</div>
-          <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Sube el PDF o imagen del reporte del Círculo de Crédito. Puedes omitir este paso y subirlo después desde la tabla de prospectos.</p>
-          <div id="cdc-dropzone" class="cdc-dropzone" ondragover="cdcDragOver(event)" ondragleave="cdcDragLeave(event)" ondrop="cdcDrop(event)">
-            <input type="file" id="cdc-input" accept=".pdf,image/jpeg,image/png,image/webp" onchange="cdcFileSelected(this.files[0])" />
-            <div class="cdc-dropzone-icon">📂</div>
-            <div class="cdc-dropzone-label">
-              <strong>Arrastra el PDF o imagen aquí</strong><br>
-              o haz clic para seleccionar · PDF, JPG, PNG · máx 10 MB
-            </div>
+      <!-- Sección 3: Actividad económica -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-title">💼 Sección 3 — Actividad económica y finanzas</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Antigüedad del negocio ⚡</label>
+            <select id="f-ant-neg">
+              <option value="">Selecciona…</option>
+              <option value="mas6">Más de 6 años</option>
+              <option value="4a6">4 a 6 años</option>
+              <option value="1a3">1 a 3 años</option>
+              <option value="menos1">Menos de un año</option>
+              <option value="recien">Apenas abrió negocio</option>
+            </select>
           </div>
-          <div id="cdc-preview" style="display:none" class="cdc-file-preview">
-            <span style="font-size:18px">📄</span>
-            <span class="cdc-fname" id="cdc-preview-name"></span>
-            <button class="cdc-remove" onclick="cdcClear()" title="Quitar archivo">✕</button>
+          <div class="field">
+            <label>Ubicación del negocio ⚡</label>
+            <select id="f-ubic-neg">
+              <option value="">Selecciona…</option>
+              <optgroup label="Tier Alto (13 pts)">
+                <option value="tienda">Tienda</option>
+                <option value="mercado">Mercado</option>
+                <option value="oficina">Oficina</option>
+                <option value="fabrica">Fábrica</option>
+                <option value="taller">Taller</option>
+              </optgroup>
+              <optgroup label="Tier Medio (9 pts)">
+                <option value="locales-comun">Locales en comunidad</option>
+                <option value="kiosco">Kiosco</option>
+                <option value="puesto-fijo-tianguis">Puesto fijo tianguis</option>
+                <option value="puesto-fijo-via">Puesto fijo vía pública</option>
+                <option value="domicilio-especial">Domicilio especial</option>
+              </optgroup>
+              <optgroup label="Tier Bajo (5 pts)">
+                <option value="puesto-improv-tianguis">Puesto improvisado tianguis</option>
+                <option value="puesto-improv-via">Puesto improvisado vía pública</option>
+                <option value="vehiculo">Vehículo</option>
+                <option value="otro-local">Otro con local</option>
+                <option value="otro-sin-local">Otro sin local</option>
+                <option value="ambulante">Ambulante</option>
+                <option value="domicilio-cliente">Domicilio del cliente</option>
+                <option value="catalogo">Catálogo</option>
+              </optgroup>
+            </select>
           </div>
-          <div class="cdc-upload-progress" id="cdc-progress-wrap" style="display:none">
-            <div class="cdc-upload-progress-bar" id="cdc-progress-bar"></div>
+          <div class="field">
+            <label>Ingresos semanales ($) ⚡</label>
+            <input type="number" id="f-ingresos" placeholder="0.00" min="0" oninput="calcularScore()" />
           </div>
-        </div>
-        <div class="row" style="justify-content:space-between">
-          <button class="btn btn-secondary" onclick="wzIr(2)">← Anterior</button>
-          <button class="btn btn-primary" onclick="wzSiguiente(3)">Siguiente → Calificación final</button>
+          <div class="field">
+            <label>Gastos semanales ($) ⚡</label>
+            <input type="number" id="f-gastos" placeholder="0.00" min="0" oninput="calcularScore()" />
+          </div>
+          <div class="field">
+            <label>Capacidad de pago semanal ($) ⚡</label>
+            <input type="number" id="f-capacidad" placeholder="0.00" min="0" oninput="calcularScore()" />
+          </div>
         </div>
       </div>
 
-      <!-- ── PASO 4: Calificación final y guardar ── -->
-      <div id="wz-paso-4" class="wz-paso" style="display:none">
-        <div class="card" style="margin-bottom:20px" id="wz-resumen-card">
-          <div class="card-title">📊 Resumen de calificación</div>
-          <div id="wz-resumen-body">
-            <div style="color:var(--muted);font-size:13px">Calculando resumen…</div>
+      <!-- Sección 4: Experiencia crediticia -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-title">💳 Sección 4 — Experiencia crediticia</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Experiencia con créditos grupales ⚡</label>
+            <select id="f-exp-grupal">
+              <option value="">Selecciona…</option>
+              <option value="ninguna">Ninguna</option>
+              <option value="1">1</option>
+              <option value="2a3">2 a 3</option>
+              <option value="mas3">Más de 3</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label>Otros tipos de crédito formal ⚡ (selección múltiple)</label>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;" id="otros-creditos">
+              <label class="chip" style="cursor:pointer">
+                <input type="checkbox" value="personal" style="width:auto;padding:0" /> Personal
+              </label>
+              <label class="chip" style="cursor:pointer">
+                <input type="checkbox" value="departamental" style="width:auto;padding:0" /> Departamental
+              </label>
+              <label class="chip" style="cursor:pointer">
+                <input type="checkbox" value="nomina" style="width:auto;padding:0" /> Nómina
+              </label>
+              <label class="chip" style="cursor:pointer">
+                <input type="checkbox" value="hipotecario" style="width:auto;padding:0" /> Hipotecario
+              </label>
+              <label class="chip" style="cursor:pointer">
+                <input type="checkbox" value="auto" style="width:auto;padding:0" /> Auto/moto
+              </label>
+            </div>
           </div>
         </div>
-        <div class="row" style="justify-content:space-between">
-          <button class="btn btn-secondary" onclick="wzIr(3)">← Anterior</button>
-          <button class="btn btn-primary" id="btn-guardar-prospecto" onclick="guardarProspecto()">
-            ✅ Guardar prospecto
-          </button>
+      </div>
+
+      <!-- Score en tiempo real -->
+      <div class="card" style="margin-bottom:20px" id="score-card">
+        <div class="card-title">🧮 Score IPP calculado</div>
+        <div class="score-display">
+          <div>
+            <div class="score-num" id="score-num">—</div>
+            <div id="grado-badge" style="margin-top:8px"></div>
+          </div>
+          <div class="score-bar-wrap">
+            <div class="score-bar">
+              <div class="score-bar-fill" id="score-fill" style="width:0;background:var(--brand)"></div>
+            </div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)" id="score-desc">
+              Completa los campos marcados con ⚡ para calcular el score
+            </div>
+          </div>
         </div>
+        <div id="block-alert" style="display:none">
+          <div class="alert alert-danger">
+            <span class="alert-icon">🚫</span>
+            <div><strong>BLOQUEO PRE-BURÓ:</strong> Grado D. No se procede a consulta CDC.</div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Sección CDC — Carga de documento -->
+      <div class="card" style="margin-bottom:20px" id="cdc-card">
+        <div class="card-title">📄 Documento CDC <span style="font-size:10px;font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0">(opcional al crear — puedes subirlo después)</span></div>
+        <div id="cdc-dropzone" class="cdc-dropzone" ondragover="cdcDragOver(event)" ondragleave="cdcDragLeave(event)" ondrop="cdcDrop(event)">
+          <input type="file" id="cdc-input" accept=".pdf,image/jpeg,image/png,image/webp" onchange="cdcFileSelected(this.files[0])" />
+          <div class="cdc-dropzone-icon">📂</div>
+          <div class="cdc-dropzone-label">
+            <strong>Arrastra el PDF o imagen aquí</strong><br>
+            o haz clic para seleccionar · PDF, JPG, PNG · máx 10 MB
+          </div>
+        </div>
+        <div id="cdc-preview" style="display:none" class="cdc-file-preview">
+          <span style="font-size:18px">📄</span>
+          <span class="cdc-fname" id="cdc-preview-name"></span>
+          <button class="cdc-remove" onclick="cdcClear()" title="Quitar archivo">✕</button>
+        </div>
+        <div class="cdc-upload-progress" id="cdc-progress-wrap" style="display:none">
+          <div class="cdc-upload-progress-bar" id="cdc-progress-bar"></div>
+        </div>
+      </div>
+
+      <div class="row" style="justify-content:flex-end;gap:12px">
+        <button class="btn btn-secondary" onclick="showView('prospectos')">Cancelar</button>
+        <button class="btn btn-primary" id="btn-guardar-prospecto" onclick="guardarProspecto()">
+          Guardar prospecto
+        </button>
       </div>
     </div>
 
@@ -599,38 +535,27 @@
 
 <!-- MODAL: Nuevo grupo -->
 <div class="modal-overlay" id="modal-grupo">
-  <div class="modal" style="max-width:560px">
+  <div class="modal">
     <button class="modal-close" onclick="cerrarModal('modal-grupo')">✕</button>
     <div class="modal-title">Nuevo grupo</div>
-    <div class="field" style="margin-bottom:16px">
-      <label>Nombre del grupo</label>
-      <input type="text" id="g-nombre" placeholder="Ej: Grupo Esperanza" />
-    </div>
-    <!-- Primera integrante -->
-    <div id="g-primera-wrap" style="margin-bottom:16px">
-      <label style="font-size:12px;font-weight:600;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:8px">Primera integrante</label>
-      <select id="g-primera" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);font-family:'IBM Plex Mono',monospace;font-size:13px">
-        <option value="">Selecciona una prospecto aprobada…</option>
-      </select>
-      <button class="btn btn-secondary btn-sm" onclick="gAgregarPrimera()" style="margin-top:8px">+ Agregar al grupo</button>
-    </div>
-    <!-- Lista de integrantes del grupo en formación -->
-    <div id="g-lista-wrap" style="margin-bottom:16px">
-      <label style="font-size:12px;font-weight:600;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:8px">
-        Integrantes <span id="g-contador" style="color:var(--brand)">0</span> <span style="font-weight:400">(mínimo 3)</span>
-      </label>
-      <div id="g-lista" style="display:flex;flex-direction:column;gap:8px;min-height:48px">
-        <div id="g-lista-empty" style="color:var(--muted);font-size:13px;font-family:'IBM Plex Mono',monospace;padding:12px;background:var(--surface2);border-radius:8px;text-align:center">
-          Sin integrantes aún
-        </div>
+    <div class="form-grid">
+      <div class="field full">
+        <label>Nombre del grupo</label>
+        <input type="text" id="g-nombre" placeholder="Ej: Grupo Esperanza" />
+      </div>
+      <div class="field full">
+        <label>Integrantes (selecciona prospectos post-buró aprobados)</label>
+        <select id="g-integrantes" multiple style="height:160px">
+        </select>
       </div>
     </div>
     <div class="row" style="justify-content:flex-end;gap:12px;margin-top:20px">
       <button class="btn btn-secondary" onclick="cerrarModal('modal-grupo')">Cancelar</button>
-      <button class="btn btn-primary" id="btn-crear-grupo" onclick="crearGrupo()" disabled>Crear grupo</button>
+      <button class="btn btn-primary" onclick="crearGrupo()">Crear grupo</button>
     </div>
   </div>
 </div>
+
 <!-- MODAL: Asignar CE -->
 <div class="modal-overlay" id="modal-asignar">
   <div class="modal">
@@ -928,139 +853,72 @@ function filtrarProspectos() {
 async function verProspecto(id) {
   const { data: p } = await sb.from('prospectos').select('*').eq('id', id).single();
   if (!p) return;
-
-  const ubic = {
-    'tienda':'Tienda','mercado':'Mercado','oficina':'Oficina','fabrica':'Fábrica','taller':'Taller',
-    'locales-comun':'Locales en comunidad','kiosco':'Kiosco','puesto-fijo-tianguis':'Puesto fijo tianguis',
-    'puesto-fijo-via':'Puesto fijo vía pública','domicilio-especial':'Domicilio especial',
-    'puesto-improv-tianguis':'Puesto improvisado tianguis','puesto-improv-via':'Puesto improvisado vía',
-    'vehiculo':'Vehículo','otro-local':'Otro con local','otro-sin-local':'Otro sin local',
-    'ambulante':'Ambulante','domicilio-cliente':'Domicilio del cliente','catalogo':'Catálogo'
-  };
-  const antDom = {'mas6':'Más de 6 años','4a6':'4 a 6 años','1a3':'1 a 3 años','menos1':'Menos de un año'};
-  const tipDom = {'propia':'Propia','hipoteca':'Hipoteca o pagando','familiar':'Familiar','rentada':'Rentada o prestada'};
-  const ineMap = {'si':'Sí coincide','no':'No coincide','sin-ine':'Sin INE actualizada'};
-  const antNeg = {'mas6':'Más de 6 años','4a6':'4 a 6 años','1a3':'1 a 3 años','menos1':'Menos de un año','recien':'Apenas abrió'};
-  const expGrp = {'mas3':'Más de 3','2a3':'2 a 3','1':'1','ninguna':'Ninguna'};
-
-  const row = (label, val) =>
-    `<div><span style="color:var(--muted);font-size:12px">${label}</span>` +
-    `<div style="font-size:13px;font-weight:600;margin-top:2px">${val || '—'}</div></div>`;
-  const mono = val => `<span style="font-family:'IBM Plex Mono',monospace">${val}</span>`;
-
-  const cdcSection =
-    `<div class="divider"></div>` +
-    `<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">📄 Documento CDC</div>` +
-    `<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">` +
-      `<div>` +
-        (p.cdc_path
-          ? `<div style="display:flex;align-items:center;gap:10px">` +
-              `<span class="cdc-badge tiene">📄 Subido</span>` +
-              `<span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)">${p.cdc_nombre || ''}</span>` +
-              `<a href="#" onclick="descargarCDC('${p.cdc_path}','${p.cdc_nombre||'cdc'}');return false;" style="font-size:12px;color:var(--brand)">Descargar</a>` +
-            `</div>`
-          : `<span class="cdc-badge falta">Sin CDC</span>`) +
-      `</div>` +
-      `<button class="btn btn-secondary btn-sm" onclick="cerrarModal('modal-prospecto');abrirSubirCDC('${p.id}','${p.nombre_completo.replace(/'/g,"\\'")}',${!!p.cdc_path})">` +
-        (p.cdc_path ? '🔄 Reemplazar CDC' : '📤 Subir CDC') +
-      `</button>` +
-    `</div>`;
-
-  const postBuroSection = p.grado_postburo
-    ? `<div class="divider"></div>` +
-      `<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">📊 Resultado post-buró</div>` +
-      `<div style="display:flex;gap:16px;align-items:center;margin-bottom:12px">` +
-        badgeGrado(p.grado_postburo) +
-        `<span style="font-weight:700;color:${p.estatus==='postburo_rechazado'?'var(--red)':'var(--green)'}">${p.estatus_postburo || '—'}</span>` +
-      `</div>` +
-      (p.reglas_postburo && JSON.parse(p.reglas_postburo||'[]').length
-        ? `<div style="font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--muted)">` +
-            JSON.parse(p.reglas_postburo).map(r => `<div style="margin-bottom:4px">• ${r}</div>`).join('') +
-          `</div>`
-        : '')
-    : '';
-
   document.getElementById('modal-prosp-title').textContent = p.nombre_completo;
-  document.getElementById('modal-prosp-body').innerHTML =
-    // Score destacado
-    `<div style="display:flex;align-items:center;gap:24px;background:var(--surface2);border-radius:10px;padding:16px 20px;margin-bottom:20px">` +
-      `<div>` +
-        `<div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Score IPP</div>` +
-        `<div style="font-size:40px;font-weight:800;font-family:'IBM Plex Mono',monospace;line-height:1">${p.score_ipp ?? '—'}</div>` +
-      `</div>` +
-      `<div style="display:flex;flex-direction:column;gap:8px">` +
-        badgeGrado(p.grado_ipp) + estatusBadge(p.estatus) +
-      `</div>` +
-      (p.grado_postburo
-        ? `<div style="margin-left:auto;text-align:right">` +
-            `<div style="font-size:11px;color:var(--muted);margin-bottom:4px">Post-buró</div>` +
-            badgeGrado(p.grado_postburo) +
-          `</div>`
-        : '') +
-    `</div>` +
-
-    // Datos personales
-    `<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">📋 Datos personales</div>` +
-    `<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">` +
-      row('CURP', mono(p.curp)) +
-      row('Teléfono', mono(p.telefono)) +
-      row('Fecha de nacimiento', p.fecha_nacimiento || '—') +
-      row('Entidad de nacimiento', p.estado_nacimiento) +
-      row('¿Es referida?', p.es_referida ? 'Sí' : 'No') +
-    `</div>` +
-
-    // Domicilio
-    `<div class="divider"></div>` +
-    `<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">🏠 Domicilio</div>` +
-    `<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">` +
-      row('Calle y número', (p.calle||'—')+' '+(p.numero_exterior||'')+(p.numero_interior?' Int. '+p.numero_interior:'')) +
-      row('Colonia', p.colonia) +
-      row('Municipio / Alcaldía', p.municipio) +
-      row('Estado', p.estado) +
-      row('C.P.', mono(p.codigo_postal)) +
-    `</div>` +
-    `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px">` +
-      row('Antigüedad domicilio', antDom[p.antiguedad_domicilio]) +
-      row('Tipo de domicilio', tipDom[p.tipo_domicilio]) +
-      row('Coincidencia INE', ineMap[p.coincidencia_ine]) +
-    `</div>` +
-
-    // Actividad económica
-    `<div class="divider"></div>` +
-    `<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">💼 Actividad económica</div>` +
-    `<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">` +
-      row('Antigüedad negocio', antNeg[p.antiguedad_negocio]) +
-      row('Ubicación negocio', ubic[p.ubicacion_negocio]) +
-    `</div>` +
-
-    // Finanzas
-    `<div class="divider"></div>` +
-    `<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">💰 Capacidad financiera</div>` +
-    `<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;margin-bottom:20px">` +
-      row('Ingresos / sem', mono('$'+(p.ingresos_semanales||0).toLocaleString())) +
-      row('Gastos / sem', mono('$'+(p.gastos_semanales||0).toLocaleString())) +
-      row('Flujo neto', mono('$'+((p.ingresos_semanales||0)-(p.gastos_semanales||0)).toLocaleString())) +
-      row('Cap. de pago', mono('$'+(p.capacidad_pago||0).toLocaleString())) +
-    `</div>` +
-
-    // Experiencia crediticia
-    `<div class="divider"></div>` +
-    `<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">💳 Experiencia crediticia</div>` +
-    `<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">` +
-      row('Créditos grupales previos', expGrp[p.exp_grupal]) +
-      row('Otros tipos de crédito', p.otros_creditos >= 2 ? '2 o más tipos' : (p.otros_creditos == 1 ? '1 tipo' : 'Ninguno')) +
-    `</div>` +
-
-    postBuroSection +
-    cdcSection +
-
-    `<div style="margin-top:16px">` +
-      `<button class="btn btn-danger btn-sm" onclick="rechazarProspecto('${p.id}')">Rechazar prospecto</button>` +
-    `</div>`;
-
+  document.getElementById('modal-prosp-body').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">CURP</div>
+        <div style="font-family:'IBM Plex Mono',monospace">${p.curp || '—'}</div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Teléfono</div>
+        <div style="font-family:'IBM Plex Mono',monospace">${p.telefono || '—'}</div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Score IPP</div>
+        <div style="font-size:32px;font-weight:800;font-family:'IBM Plex Mono',monospace">${p.score_ipp}</div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Grado</div>
+        <div>${badgeGrado(p.grado_ipp)}</div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13px">
+      <div><span style="color:var(--muted)">Ingresos semanales:</span> <strong>$${(p.ingresos_semanales||0).toLocaleString()}</strong></div>
+      <div><span style="color:var(--muted)">Gastos semanales:</span> <strong>$${(p.gastos_semanales||0).toLocaleString()}</strong></div>
+      <div><span style="color:var(--muted)">Capacidad pago:</span> <strong>$${(p.capacidad_pago||0).toLocaleString()}</strong></div>
+      <div><span style="color:var(--muted)">Flujo neto:</span> <strong>$${((p.ingresos_semanales||0)-(p.gastos_semanales||0)).toLocaleString()}</strong></div>
+    </div>
+    <div class="divider"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13px">
+      <div><span style="color:var(--muted)">Negocio:</span> ${p.antiguedad_negocio || '—'}</div>
+      <div><span style="color:var(--muted)">Ubicación:</span> ${p.ubicacion_negocio || '—'}</div>
+      <div><span style="color:var(--muted)">Exp. grupal:</span> ${p.exp_grupal || '—'}</div>
+      <div><span style="color:var(--muted)">¿Referida?:</span> ${p.es_referida ? 'Sí' : 'No'}</div>
+    </div>
+    ${p.grado_postburo ? `
+      <div class="divider"></div>
+      <div><span style="color:var(--muted);font-size:12px">POST-BURÓ:</span>
+        ${badgeGrado(p.grado_postburo)}
+        <span style="margin-left:8px">${estatusBadge(p.estatus)}</span>
+      </div>
+      ${p.reglas_postburo ? `<div style="margin-top:8px;font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--muted)">
+        ${JSON.parse(p.reglas_postburo||'[]').map(r => `<div>• ${r}</div>`).join('')}
+      </div>` : ''}
+    ` : ''}
+    <div class="divider"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Documento CDC</div>
+        ${p.cdc_path
+          ? `<div style="display:flex;align-items:center;gap:10px">
+               <span class="cdc-badge tiene">📄 Subido</span>
+               <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)">${p.cdc_nombre || ''}</span>
+               <a href="#" onclick="descargarCDC('${p.cdc_path}','${p.cdc_nombre||'cdc'}');return false;" style="font-size:12px;color:var(--brand)">Descargar</a>
+             </div>`
+          : `<span class="cdc-badge falta">Sin CDC</span>`}
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="cerrarModal('modal-prospecto');abrirSubirCDC('${p.id}','${p.nombre_completo}',${!!p.cdc_path})">
+        ${p.cdc_path ? '🔄 Reemplazar CDC' : '📤 Subir CDC'}
+      </button>
+    </div>
+    <div style="margin-top:16px">
+      <button class="btn btn-danger btn-sm" onclick="rechazarProspecto('${p.id}')">Rechazar prospecto</button>
+    </div>
+  `;
   abrirModal('modal-prospecto');
 }
-
 
 // ─── Score en tiempo real ──────────────────────────────────
 function calcularScore() {
@@ -1367,113 +1225,44 @@ async function cargarGrupos() {
   }).join('');
 }
 
-// ── Estado de grupo en formación ──────────────────────────
-let gIntegrantesSeleccionados = []; // [{id, nombre, grado}]
-let gProspectosDisponibles = [];
-
 async function abrirModalNuevoGrupo() {
-  // Cargar prospectos post-buró aprobados que no están ya en un grupo
   const { data } = await sb.from('prospectos')
     .select('id, nombre_completo, grado_postburo')
     .eq('estatus', 'postburo_aprobado');
 
-  gProspectosDisponibles = data || [];
-  gIntegrantesSeleccionados = [];
-  document.getElementById('g-nombre').value = '';
-  document.getElementById('btn-crear-grupo').disabled = true;
-  renderGSelectPrimera();
-  renderGLista();
+  const sel = document.getElementById('g-integrantes');
+  sel.innerHTML = '';
+  (data || []).forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = `${p.nombre_completo} (${p.grado_postburo})`;
+    sel.appendChild(opt);
+  });
   abrirModal('modal-grupo');
-}
-
-function renderGSelectPrimera() {
-  const sel = document.getElementById('g-primera');
-  const yaIds = new Set(gIntegrantesSeleccionados.map(i => i.id));
-  sel.innerHTML = '<option value="">Selecciona una prospecto aprobada…</option>';
-  gProspectosDisponibles
-    .filter(p => !yaIds.has(p.id))
-    .forEach(p => {
-      const opt = document.createElement('option');
-      opt.value = p.id;
-      opt.textContent = `${p.nombre_completo} (${p.grado_postburo || '—'})`;
-      sel.appendChild(opt);
-    });
-}
-
-function gAgregarPrimera() {
-  const sel = document.getElementById('g-primera');
-  const id = sel.value;
-  if (!id) { toast('Selecciona una prospecto primero', 'warn'); return; }
-  const p = gProspectosDisponibles.find(x => x.id === id);
-  if (!p) return;
-  gIntegrantesSeleccionados.push({ id: p.id, nombre: p.nombre_completo, grado: p.grado_postburo });
-  renderGSelectPrimera();
-  renderGLista();
-}
-
-function gQuitarIntegrante(id) {
-  gIntegrantesSeleccionados = gIntegrantesSeleccionados.filter(i => i.id !== id);
-  renderGSelectPrimera();
-  renderGLista();
-}
-
-function renderGLista() {
-  const lista = document.getElementById('g-lista');
-  const contador = document.getElementById('g-contador');
-  const btnCrear = document.getElementById('btn-crear-grupo');
-  const n = gIntegrantesSeleccionados.length;
-
-  contador.textContent = n;
-  btnCrear.disabled = n < 3;
-
-  if (n === 0) {
-    lista.innerHTML = '<div id="g-lista-empty" style="color:var(--muted);font-size:13px;font-family:IBM Plex Mono,monospace;padding:12px;background:var(--surface2);border-radius:8px;text-align:center">Sin integrantes aún</div>';
-    return;
-  }
-
-  lista.innerHTML = gIntegrantesSeleccionados.map(i => `
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px">
-      <div style="display:flex;align-items:center;gap:10px">
-        <span style="font-size:13px;font-weight:600">${i.nombre}</span>
-        ${badgeGrado(i.grado)}
-      </div>
-      <button onclick="gQuitarIntegrante('${i.id}')"
-        style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:18px;line-height:1;padding:0 4px"
-        title="Quitar del grupo">✕</button>
-    </div>
-  `).join('');
 }
 
 async function crearGrupo() {
   const nombre = document.getElementById('g-nombre').value.trim();
+  const integrantes = Array.from(document.getElementById('g-integrantes').selectedOptions).map(o => o.value);
   if (!nombre) { toast('Nombre del grupo requerido', 'error'); return; }
-  if (gIntegrantesSeleccionados.length < 3) { toast('Mínimo 3 integrantes para consolidar el grupo', 'error'); return; }
-
-  const btn = document.getElementById('btn-crear-grupo');
-  btn.disabled = true;
-  btn.textContent = 'Creando…';
-
-  const intIds = gIntegrantesSeleccionados.map(i => i.id);
+  if (integrantes.length < 3) { toast('Mínimo 3 integrantes', 'error'); return; }
 
   const { data: grupo, error } = await sb.from('grupos').insert({
-    nombre,
-    num_integrantes: intIds.length,
-    estatus: 'formado',
-    created_by: currentUser.id
+    nombre, num_integrantes: integrantes.length, estatus: 'formado', created_by: currentUser.id
   }).select().single();
 
-  if (error) { toast('Error creando grupo: ' + error.message, 'error'); btn.disabled = false; btn.textContent = 'Crear grupo'; return; }
+  if (error) { toast('Error creando grupo: ' + error.message, 'error'); return; }
 
-  await sb.from('integrantes').insert(intIds.map(pid => ({ grupo_id: grupo.id, prospecto_id: pid })));
-  await sb.from('prospectos').update({ estatus: 'en_grupo' }).in('id', intIds);
+  // Asignar integrantes
+  await sb.from('integrantes').insert(integrantes.map(pid => ({ grupo_id: grupo.id, prospecto_id: pid })));
 
-  toast(`Grupo "${nombre}" creado con ${intIds.length} integrantes`);
+  // Actualizar estatus de prospectos
+  await sb.from('prospectos').update({ estatus: 'en_grupo' }).in('id', integrantes);
+
+  toast(`Grupo "${nombre}" creado con ${integrantes.length} integrantes`);
   cerrarModal('modal-grupo');
   cargarGrupos();
-  btn.disabled = false;
-  btn.textContent = 'Crear grupo';
 }
-
 
 async function cargarCEs() {
   const { data } = await sb.from('profiles').select('id, email').eq('role', 'CE');
@@ -1564,116 +1353,6 @@ async function cargarTablaAsignaciones() {
     `;
   }).join('');
 }
-
-// ── Wizard: navegación entre pasos ────────────────────────
-let wzPasoActual = 1;
-
-function wzIr(paso) {
-  // Solo permitir ir a pasos ya visitados o al siguiente secuencial
-  document.querySelectorAll('.wz-paso').forEach(el => el.style.display = 'none');
-  const el = document.getElementById('wz-paso-' + paso);
-  if (el) el.style.display = 'block';
-
-  // Actualizar tabs
-  for (let i = 1; i <= 4; i++) {
-    const tab = document.getElementById('wz-tab-' + i);
-    if (!tab) continue;
-    tab.classList.remove('active', 'done');
-    if (i === paso) tab.classList.add('active');
-    else if (i < paso) tab.classList.add('done');
-  }
-
-  wzPasoActual = paso;
-
-  // Al llegar al paso 4 renderizar resumen
-  if (paso === 4) wzRenderResumen();
-}
-
-function wzSiguiente(pasoActual) {
-  if (pasoActual === 1) {
-    // Validar paso 1: nombre y CURP mínimo
-    const nombre = (document.getElementById('f-nombres').value + ' ' + document.getElementById('f-ap-pat').value).trim();
-    const curp = document.getElementById('f-curp').value;
-    const tel = document.getElementById('f-telefono').value;
-    const tel2 = document.getElementById('f-telefono2').value;
-    if (!nombre) { toast('Nombre requerido', 'error'); return; }
-    if (curp.length !== 18) { toast('CURP debe tener 18 caracteres', 'error'); return; }
-    if (tel && tel2 && tel !== tel2) { toast('Los teléfonos no coinciden', 'error'); return; }
-    wzIr(2);
-  } else if (pasoActual === 2) {
-    // Validar que tenga score calculado
-    const d = leerFormulario();
-    const required = ['antiguedad_domicilio','tipo_domicilio','coincidencia_ine','antiguedad_negocio','ubicacion_negocio','exp_grupal'];
-    if (required.some(k => !d[k])) { toast('Completa todos los campos de scoring (⚡)', 'error'); return; }
-    calcularScore();
-    wzIr(3);
-  } else if (pasoActual === 3) {
-    // CDC es opcional, puede pasar sin archivo
-    wzIr(4);
-  }
-}
-
-function wzRenderResumen() {
-  const d = leerFormulario();
-  const { score, grado } = calcularIPP(d);
-  const nombre = [
-    document.getElementById('f-nombres').value,
-    document.getElementById('f-ap-pat').value,
-    document.getElementById('f-ap-mat').value
-  ].join(' ').trim();
-
-  const colores = { A: 'var(--green)', B: 'var(--purple)', C: 'var(--yellow-chip)', D: 'var(--red)' };
-  const descs = {
-    A: 'Perfil excelente — continúa a consulta CDC',
-    B: 'Perfil bueno — continúa a consulta CDC',
-    C: 'Perfil aceptable con reservas — continúa a CDC',
-    D: 'Perfil insuficiente — se registra pero se recomienda no consultar CDC'
-  };
-
-  document.getElementById('wz-resumen-body').innerHTML =
-    `<div style="display:flex;align-items:center;gap:24px;background:var(--surface2);border-radius:10px;padding:16px 20px;margin-bottom:20px">` +
-      `<div>` +
-        `<div style="font-size:11px;color:var(--muted);margin-bottom:4px">Score calculado</div>` +
-        `<div style="font-size:48px;font-weight:800;font-family:'IBM Plex Mono',monospace;line-height:1;color:${colores[grado]}">${score}</div>` +
-      `</div>` +
-      `<div style="flex:1">` +
-        badgeGrado(grado) +
-        `<div style="font-size:13px;color:var(--muted);margin-top:8px">${descs[grado]}</div>` +
-      `</div>` +
-    `</div>` +
-    `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px">` +
-      `<div><span style="color:var(--muted)">Nombre:</span> <strong>${nombre || '—'}</strong></div>` +
-      `<div><span style="color:var(--muted)">CURP:</span> <span style="font-family:'IBM Plex Mono',monospace">${document.getElementById('f-curp').value || '—'}</span></div>` +
-      `<div><span style="color:var(--muted)">Ingresos:</span> <strong>$${parseFloat(document.getElementById('f-ingresos').value||0).toLocaleString()}/sem</strong></div>` +
-      `<div><span style="color:var(--muted)">Capacidad pago:</span> <strong>$${parseFloat(document.getElementById('f-capacidad').value||0).toLocaleString()}/sem</strong></div>` +
-      `<div><span style="color:var(--muted)">CDC adjunto:</span> <strong>${cdcFileNuevo ? '✅ '+cdcFileNuevo.name : 'Sin archivo (se puede subir después)'}</strong></div>` +
-    `</div>`;
-}
-
-// Reset wizard al navegar a la vista
-const _origShowView = showView;
-function showView(v) {
-  _origShowView(v);
-  if (v === 'nuevo-prospecto') {
-    wzIr(1);
-    // Limpiar formulario
-    ['f-nombres','f-ap-pat','f-ap-mat','f-curp','f-calle','f-next','f-nint','f-cp','f-colonia','f-municipio',
-     'f-telefono','f-telefono2','f-ingresos','f-gastos','f-capacidad'].forEach(id => {
-      const el = document.getElementById(id); if (el) el.value = '';
-    });
-    ['f-ant-dom','f-tipo-dom','f-ine','f-ant-neg','f-ubic-neg','f-exp-grupal'].forEach(id => {
-      const el = document.getElementById(id); if (el) el.value = '';
-    });
-    document.getElementById('f-referida').value = 'false';
-    document.querySelectorAll('#otros-creditos input[type=checkbox]').forEach(cb => cb.checked = false);
-    document.getElementById('score-num').textContent = '—';
-    document.getElementById('grado-badge').innerHTML = '';
-    document.getElementById('score-fill').style.width = '0';
-    document.getElementById('block-alert').style.display = 'none';
-    cdcClear();
-  }
-}
-
 </script>
 </body>
 </html>
