@@ -86,7 +86,7 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdjd2FkdHhvcWtid3RxeGpkdGxmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYwMzUsImV4cCI6MjA4NzcxMjAzNX0.C6R7kg2OQXN5Rd6-zVbjGbWhMO4kTPHB0uN5i7Q2ZyI';
     const { createClient } = supabase;
     const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const ROUTES = { CE: 'ce.html', CIMA: 'cima.html', Direccion: 'dashboard.html' };
+    const ROUTES = { CE: 'ce.html', CS: 'cs.html', CIMA: 'cima.html', Direccion: 'dashboard.html' };
 
     (async () => {
       const { data: { session } } = await sb.auth.getSession();

@@ -9,6 +9,7 @@ Supabase URL: `https://gcwadtxoqkbwtqxjdtlf.supabase.co`
 |-------|----------|-----|
 | cima@podemos.mx | Podemos2026! | CIMA |
 | ce1@podemos.mx | Podemos2026! | CE |
+| cs1@podemos.mx | Podemos2026! | CS |
 | direccion@podemos.mx | Podemos2026! | Dirección |
 
 ---
@@ -46,6 +47,7 @@ Supabase URL: `https://gcwadtxoqkbwtqxjdtlf.supabase.co`
 | `index.html` | Login — redirige por rol automáticamente |
 | `cima.html` | Vista CIMA — gestión operativa completa |
 | `ce.html` | Vista CE — checklist + evaluación grupal |
+| `cs.html` | Vista CS — supervisión de grupos y CEs |
 | `dashboard.html` | Vista Dirección — dashboard ejecutivo |
 | `ipp-core.js` | Motor scoring + Supabase config con credenciales |
 | `ipp-styles.css` | Sistema de diseño compartido |
@@ -55,6 +57,7 @@ Supabase URL: `https://gcwadtxoqkbwtqxjdtlf.supabase.co`
 ## Flujo de prueba rápida
 
 1. Login con `cima@podemos.mx` → crear un prospecto → llenar campos ⚡ → ver score en tiempo real
-2. Aplicar post-buró → crear grupo → asignar a `ce1@podemos.mx`
-3. Login con `ce1@podemos.mx` → evaluar integrantes → calificación grupal
-4. Login con `direccion@podemos.mx` → ver dashboard con datos reales
+2. Aplicar post-buró → crear grupo → asignar al CS con `Asignaciones CS`
+3. Login con `cs1@podemos.mx` → recibir grupo → asignar CE → seguimiento de evaluaciones
+4. Login con `ce1@podemos.mx` → evaluar integrantes → calificación grupal
+5. Login con `direccion@podemos.mx` → ver dashboard con datos reales

@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IPP — Coordinador CS</title>
+  <link rel="stylesheet" href="ipp-styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* ── CS stats row ── */
+    .cs-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .cs-stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+    .cs-stat-num {
+      font-size: 30px;
+      font-weight: 800;
+      font-family: 'IBM Plex Mono', monospace;
+      line-height: 1;
+    }
+    .cs-stat-lbl {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── Grupo card ── */
+    .gcard {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .gcard-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 18px;
+      flex-wrap: wrap;
+    }
+    .gcard-body {
+      border-top: 1px solid var(--border);
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .gcard-title { font-size: 15px; font-weight: 700; }
+    .gcard-meta  { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+    .ce-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--blue-bg);
+      border: 1px solid var(--blue-chip);
+      color: var(--blue);
+      border-radius: 99px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* ── integrante rows en modal ── */
+    .int-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .int-row:last-child { border-bottom: none; }
+
+    /* ── veredicto chips ── */
+    .vchip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border-radius: 99px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid;
+      white-space: nowrap;
+    }
+    .vchip-ok  { background: var(--green-bg);  border-color: var(--green-chip); color: var(--green); }
+    .vchip-no  { background: var(--red-bg);    border-color: var(--red-chip);   color: var(--red); }
+    .vchip-pnd { background: var(--surface2);  border-color: var(--border2);    color: var(--muted); }
+
+    @media (max-width: 768px) {
+      .cs-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+<div class="app" id="app" style="display:none">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">I</div>
+      <span class="brand-name">IPP Sistema</span>
+      <span class="brand-role">CS</span>
+    </div>
+    <div class="topbar-right">
+      <span class="user-info" id="user-email"></span>
+      <button class="btn btn-secondary btn-sm" onclick="logout()">Salir</button>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="nav-section">
+      <div class="nav-label">Operativo</div>
+      <a class="nav-item active" onclick="showView('grupos')" href="#">
+        <span class="nav-icon">👥</span> Grupos recibidos
+      </a>
+      <a class="nav-item" onclick="showView('ces')" href="#">
+        <span class="nav-icon">👤</span> Mis CEs
+      </a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Seguimiento</div>
+      <a class="nav-item" onclick="showView('evaluaciones')" href="#">
+        <span class="nav-icon">📋</span> Evaluaciones de campo
+      </a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ═══ VISTA: GRUPOS RECIBIDOS ═══ -->
+    <div id="view-grupos" class="view fade-in">
+      <div class="page-header flex-between">
+        <div>
+          <div class="page-title">Grupos recibidos</div>
+          <div class="page-sub">Grupos consolidados por CIMA — asigna un CE para la visita de campo</div>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="cargarGrupos()">🔄 Actualizar</button>
+      </div>
+
+      <div class="cs-stats">
+        <div class="cs-stat">
+          <div class="cs-stat-num" id="stat-total">—</div>
+          <div class="cs-stat-lbl">Total grupos</div>
+        </div>
+        <div class="cs-stat">
+          <div class="cs-stat-num" id="stat-sin-ce">—</div>
+          <div class="cs-stat-lbl">Sin CE asignado</div>
+        </div>
+        <div class="cs-stat">
+          <div class="cs-stat-num" id="stat-en-campo">—</div>
+          <div class="cs-stat-lbl">En campo</div>
+        </div>
+        <div class="cs-stat">
+          <div class="cs-stat-num" id="stat-evaluados">—</div>
+          <div class="cs-stat-lbl">Evaluados</div>
+        </div>
+      </div>
+
+      <div class="filters">
+        <input class="search-input" id="search-g" placeholder="Buscar grupo…" oninput="filtrarGrupos()" />
+        <select class="filter-select" id="filter-est" onchange="filtrarGrupos()">
+          <option value="">Todos los estatus</option>
+          <option value="formado">Formado</option>
+          <option value="asignado">Asignado</option>
+          <option value="por_visitar">Por visitar</option>
+          <option value="en_visita">En visita</option>
+          <option value="aprobado_ce">Aprobado CE</option>
+          <option value="rechazado_ce">Rechazado CE</option>
+          <option value="activo">Activo</option>
+        </select>
+      </div>
+
+      <div id="grupos-container">
+        <div style="text-align:center;padding:48px;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:13px">
+          Cargando grupos…
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ VISTA: MIS CEs ═══ -->
+    <div id="view-ces" class="view fade-in" style="display:none">
+      <div class="page-header">
+        <div class="page-title">Mis CEs</div>
+        <div class="page-sub">Coordinadores de Evaluación y su actividad en campo</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Correo CE</th>
+              <th>Grupos asignados</th>
+              <th>Evaluados</th>
+              <th>Aprobados</th>
+              <th>Rechazados</th>
+              <th>Pendientes</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-ces">
+            <tr class="empty-row"><td colspan="6">Cargando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ VISTA: EVALUACIONES DE CAMPO ═══ -->
+    <div id="view-evaluaciones" class="view fade-in" style="display:none">
+      <div class="page-header">
+        <div class="page-title">Evaluaciones de campo</div>
+        <div class="page-sub">Resultados de visitas reportados por los CEs</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Grupo</th>
+              <th>CE</th>
+              <th>Integrantes</th>
+              <th>Aprobados</th>
+              <th>Rechazados</th>
+              <th>Veredicto CE</th>
+              <th>Score grupal</th>
+              <th>Nivel revisión</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-evaluaciones">
+            <tr class="empty-row"><td colspan="9">Cargando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL: Asignar CE al grupo -->
+<div class="modal-overlay" id="modal-ce">
+  <div class="modal">
+    <button class="modal-close" onclick="cerrarModal('modal-ce')">✕</button>
+    <div class="modal-title">Asignar CE al grupo</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:20px" id="modal-ce-nombre"></p>
+    <div class="form-grid">
+      <div class="field full">
+        <label>Coordinador de Evaluación (CE)</label>
+        <select id="modal-ce-select"></select>
+      </div>
+      <div class="field full">
+        <label>Dirección / Zona de visita</label>
+        <input type="text" id="modal-ce-dir" placeholder="Ej: Colonia Centro, Ecatepec" />
+      </div>
+    </div>
+    <input type="hidden" id="modal-ce-grupo-id" />
+    <div class="row" style="justify-content:flex-end;gap:12px;margin-top:20px">
+      <button class="btn btn-secondary" onclick="cerrarModal('modal-ce')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarAsignacionCE()">Asignar CE</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Detalle evaluación grupal -->
+<div class="modal-overlay" id="modal-eval">
+  <div class="modal" style="max-width:640px">
+    <button class="modal-close" onclick="cerrarModal('modal-eval')">✕</button>
+    <div class="modal-title" id="modal-eval-titulo">Detalle evaluación</div>
+    <div id="modal-eval-body"></div>
+  </div>
+</div>
+
+<script src="ipp-core.js"></script>
+<script>
+// ─── State ──────────────────────────────────────────────────
+let currentUser = null;
+let todosGrupos = [];
+let todosCEs    = [];
+
+// ─── Init ─────────────────────────────────────────────────
+(async () => {
+  const auth = await requireAuth(['CS']);
+  if (!auth) return;
+  currentUser = auth.profile;
+  document.getElementById('user-email').textContent = auth.session.user.email;
+  document.getElementById('app').style.display = 'grid';
+  await cargarCEs();
+  await cargarGrupos();
+})();
+
+// ─── Views ────────────────────────────────────────────────
+function showView(v) {
+  document.querySelectorAll('.view').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('view-' + v);
+  if (el) { el.style.display = 'block'; el.classList.add('fade-in'); }
+  event?.target?.closest?.('.nav-item')?.classList.add('active');
+  if (v === 'ces')          renderTablaCEs();
+  if (v === 'evaluaciones') renderTablaEvaluaciones();
+}
+
+function abrirModal(id) { document.getElementById(id).classList.add('show'); }
+function cerrarModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// ─── Cargar CEs disponibles ────────────────────────────────
+async function cargarCEs() {
+  const { data } = await sb.from('profiles').select('id, email').eq('role', 'CE');
+  todosCEs = data || [];
+  const sel = document.getElementById('modal-ce-select');
+  sel.innerHTML = '<option value="">Selecciona un CE…</option>';
+  todosCEs.forEach(u => {
+    const o = document.createElement('option');
+    o.value = u.id;
+    o.textContent = u.email;
+    sel.appendChild(o);
+  });
+}
+
+// ─── Cargar grupos ─────────────────────────────────────────
+async function cargarGrupos() {
+  const { data, error } = await sb.from('grupos').select(`
+    id, nombre, num_integrantes, estatus, created_at,
+    asignaciones_ce(
+      ce_id, direccion,
+      profiles(id, email)
+    ),
+    integrantes(
+      prospecto_id,
+      prospectos(id, nombre_completo, score_ipp, grado_ipp, grado_postburo),
+      evaluaciones_ce(decision, motivo_rechazo, created_at)
+    ),
+    evaluaciones_grupales(
+      id, score_ce, nivel_revision, veredicto, motivo_rechazo,
+      score_ipp_grupal, grado_ipp_grupal, group_red_flag,
+      estado_integrantes, notas_ce, comentario_general, created_at
+    )
+  `).order('created_at', { ascending: false });
+
+  if (error) { toast('Error al cargar grupos: ' + error.message, 'error'); return; }
+  todosGrupos = data || [];
+  actualizarStats();
+  renderGrupos(todosGrupos);
+}
+
+function actualizarStats() {
+  document.getElementById('stat-total').textContent =
+    todosGrupos.length;
+  document.getElementById('stat-sin-ce').textContent =
+    todosGrupos.filter(g => !g.asignaciones_ce?.length).length;
+  document.getElementById('stat-en-campo').textContent =
+    todosGrupos.filter(g => ['por_visitar','en_visita'].includes(g.estatus)).length;
+  document.getElementById('stat-evaluados').textContent =
+    todosGrupos.filter(g => g.evaluaciones_grupales?.length > 0).length;
+}
+
+// ─── Render: cards de grupos ───────────────────────────────
+function renderGrupos(lista) {
+  const container = document.getElementById('grupos-container');
+  if (!lista.length) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:48px;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:13px">
+        <div style="font-size:36px;margin-bottom:12px">📭</div>
+        Sin grupos para mostrar
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = lista.map(g => {
+    const asig   = g.asignaciones_ce?.[0];
+    const evalG  = g.evaluaciones_grupales?.[0];
+    const ints   = g.integrantes || [];
+    const aprob  = ints.filter(i => i.evaluaciones_ce?.[0]?.decision === 'aprobado').length;
+    const rechoz = ints.filter(i => i.evaluaciones_ce?.[0]?.decision === 'rechazado').length;
+    const evalN  = ints.filter(i => i.evaluaciones_ce?.length > 0).length;
+
+    const veredictoHtml = evalG
+      ? `<span class="vchip ${evalG.veredicto === 'aprobar' ? 'vchip-ok' : 'vchip-no'}">
+          ${evalG.veredicto === 'aprobar' ? '✅ Aprobado CE' : '❌ No aprobado CE'}
+        </span>`
+      : '';
+
+    return `
+      <div class="gcard">
+        <div class="gcard-head">
+          <div style="flex:1;min-width:0">
+            <div class="gcard-title">${g.nombre}</div>
+            <div class="gcard-meta">
+              ${g.num_integrantes || ints.length} integrantes ·
+              ${new Date(g.created_at).toLocaleDateString('es-MX')}
+            </div>
+          </div>
+          <div class="row" style="gap:8px;flex-wrap:wrap">
+            ${estatusBadge(g.estatus || 'formado')}
+            ${veredictoHtml}
+          </div>
+        </div>
+        <div class="gcard-body">
+          <div class="row" style="gap:14px;flex-wrap:wrap;align-items:center">
+            ${asig
+              ? `<span class="ce-chip">👤 ${asig.profiles?.email || '—'}</span>
+                 <span style="font-size:12px;color:var(--muted)">📍 ${asig.direccion || '—'}</span>`
+              : `<span style="font-size:13px;color:var(--muted);font-style:italic">Sin CE asignado</span>`}
+            ${evalN > 0
+              ? `<span style="font-size:12px;color:var(--muted)">
+                  Eval: <strong style="color:var(--green)">${aprob}✅</strong>
+                  <strong style="color:var(--red)"> ${rechoz}❌</strong> / ${ints.length}
+                </span>`
+              : ''}
+            ${evalG?.score_ipp_grupal != null
+              ? `<span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)">
+                  Score: <strong>${evalG.score_ipp_grupal}</strong>
+                  ${badgeGrado(evalG.grado_ipp_grupal)}
+                </span>`
+              : ''}
+          </div>
+          <div class="row" style="gap:8px">
+            ${evalG
+              ? `<button class="btn btn-secondary btn-sm" onclick="verEvaluacion('${g.id}')">Ver evaluación</button>`
+              : ''}
+            <button class="btn btn-secondary btn-sm"
+              onclick="abrirAsignarCE('${g.id}','${g.nombre.replace(/'/g,"\\'")}','${asig?.ce_id||''}','${(asig?.direccion||'').replace(/'/g,"\\'")}')">
+              ${asig ? '🔄 Reasignar CE' : '👤 Asignar CE'}
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ─── Filtrar grupos ────────────────────────────────────────
+function filtrarGrupos() {
+  const q   = document.getElementById('search-g').value.toLowerCase();
+  const est = document.getElementById('filter-est').value;
+  renderGrupos(todosGrupos.filter(g =>
+    (!q   || g.nombre.toLowerCase().includes(q)) &&
+    (!est || g.estatus === est)
+  ));
+}
+
+// ─── Asignar CE ────────────────────────────────────────────
+function abrirAsignarCE(grupoId, nombre, ceIdActual, dirActual) {
+  document.getElementById('modal-ce-grupo-id').value = grupoId;
+  document.getElementById('modal-ce-nombre').textContent = nombre;
+  document.getElementById('modal-ce-select').value = ceIdActual || '';
+  document.getElementById('modal-ce-dir').value    = dirActual  || '';
+  abrirModal('modal-ce');
+}
+
+async function guardarAsignacionCE() {
+  const grupoId   = document.getElementById('modal-ce-grupo-id').value;
+  const ceId      = document.getElementById('modal-ce-select').value;
+  const direccion = document.getElementById('modal-ce-dir').value.trim();
+
+  if (!ceId)      { toast('Selecciona un CE', 'error'); return; }
+  if (!direccion) { toast('Ingresa la dirección o zona', 'error'); return; }
+
+  const { error } = await sb.from('asignaciones_ce').upsert(
+    { grupo_id: grupoId, ce_id: ceId, direccion },
+    { onConflict: 'grupo_id' }
+  );
+  if (error) { toast('Error: ' + error.message, 'error'); return; }
+
+  await sb.from('grupos').update({ estatus: 'por_visitar' }).eq('id', grupoId);
+
+  toast('CE asignado — grupo marcado como Por visitar');
+  cerrarModal('modal-ce');
+  await cargarGrupos();
+}
+
+// ─── Tabla: Mis CEs ────────────────────────────────────────
+function renderTablaCEs() {
+  if (!todosCEs.length) {
+    document.getElementById('tabla-ces').innerHTML =
+      '<tr class="empty-row"><td colspan="6">Sin CEs registrados en el sistema</td></tr>';
+    return;
+  }
+
+  const mapa = {};
+  todosCEs.forEach(ce => {
+    mapa[ce.id] = { email: ce.email, asignados: 0, evaluados: 0, aprobados: 0, rechazados: 0 };
+  });
+  todosGrupos.forEach(g => {
+    const asig = g.asignaciones_ce?.[0];
+    if (!asig?.ce_id || !mapa[asig.ce_id]) return;
+    const m = mapa[asig.ce_id];
+    m.asignados++;
+    const evalG = g.evaluaciones_grupales?.[0];
+    if (evalG) {
+      m.evaluados++;
+      if (evalG.veredicto === 'aprobar')    m.aprobados++;
+      if (evalG.veredicto === 'noaprobar')  m.rechazados++;
+    }
+  });
+
+  const rows = Object.values(mapa);
+  document.getElementById('tabla-ces').innerHTML = rows.length
+    ? rows.map(m => `
+        <tr>
+          <td><strong>${m.email}</strong></td>
+          <td><span style="font-family:'IBM Plex Mono',monospace">${m.asignados}</span></td>
+          <td><span style="font-family:'IBM Plex Mono',monospace">${m.evaluados}</span></td>
+          <td><span style="color:var(--green);font-weight:700">${m.aprobados}</span></td>
+          <td><span style="color:var(--red);font-weight:700">${m.rechazados}</span></td>
+          <td><span style="font-family:'IBM Plex Mono',monospace;color:var(--muted)">${m.asignados - m.evaluados}</span></td>
+        </tr>`).join('')
+    : '<tr class="empty-row"><td colspan="6">Sin CEs registrados</td></tr>';
+}
+
+// ─── Tabla: Evaluaciones ───────────────────────────────────
+function renderTablaEvaluaciones() {
+  const lista = todosGrupos.filter(g => g.evaluaciones_grupales?.length > 0);
+  if (!lista.length) {
+    document.getElementById('tabla-evaluaciones').innerHTML =
+      '<tr class="empty-row"><td colspan="9">Sin evaluaciones de campo registradas aún</td></tr>';
+    return;
+  }
+
+  const nivelMap = {
+    estandar:   '<span style="color:var(--green);font-weight:600">Estándar</span>',
+    atencion:   '<span style="color:var(--yellow);font-weight:600">Atención</span>',
+    prioritaria:'<span style="color:var(--red);font-weight:600">Prioritaria</span>'
+  };
+
+  document.getElementById('tabla-evaluaciones').innerHTML = lista.map(g => {
+    const asig   = g.asignaciones_ce?.[0];
+    const evalG  = g.evaluaciones_grupales[0];
+    const ints   = g.integrantes || [];
+    const aprob  = ints.filter(i => i.evaluaciones_ce?.[0]?.decision === 'aprobado').length;
+    const rechoz = ints.filter(i => i.evaluaciones_ce?.[0]?.decision === 'rechazado').length;
+    const aprobado = evalG.veredicto === 'aprobar';
+
+    return `
+      <tr>
+        <td><strong>${g.nombre}</strong></td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:12px">${asig?.profiles?.email || '—'}</td>
+        <td>${ints.length}</td>
+        <td><span style="color:var(--green);font-weight:700">${aprob}</span></td>
+        <td><span style="color:var(--red);font-weight:700">${rechoz}</span></td>
+        <td><span style="color:${aprobado ? 'var(--green)':'var(--red)'};font-weight:700">
+          ${aprobado ? '✅ Aprobado' : '❌ No aprobado'}
+        </span></td>
+        <td>
+          <span style="font-family:'IBM Plex Mono',monospace;font-weight:700">${evalG.score_ipp_grupal ?? evalG.score_ce ?? '—'}</span>
+          ${evalG.grado_ipp_grupal ? badgeGrado(evalG.grado_ipp_grupal) : ''}
+        </td>
+        <td>${nivelMap[evalG.nivel_revision] || evalG.nivel_revision || '—'}</td>
+        <td>
+          <button class="btn btn-secondary btn-sm" onclick="verEvaluacion('${g.id}')">Ver detalle</button>
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+// ─── Modal: detalle evaluación grupal ─────────────────────
+function verEvaluacion(grupoId) {
+  const g = todosGrupos.find(x => x.id === grupoId);
+  if (!g) return;
+
+  const asig  = g.asignaciones_ce?.[0];
+  const evalG = g.evaluaciones_grupales?.[0];
+  const ints  = g.integrantes || [];
+
+  document.getElementById('modal-eval-titulo').textContent = g.nombre;
+
+  const intsHtml = ints.map(i => {
+    const p    = i.prospectos || {};
+    const evalI = i.evaluaciones_ce?.[0];
+    const dec  = evalI?.decision;
+    const cls  = dec === 'aprobado' ? 'vchip-ok' : dec === 'rechazado' ? 'vchip-no' : 'vchip-pnd';
+    const lbl  = dec === 'aprobado' ? '✅ Aprobado' : dec === 'rechazado' ? '❌ Rechazado' : '⏳ Pendiente';
+    return `
+      <div class="int-row">
+        <div style="flex:1;font-weight:600">${p.nombre_completo || '—'}</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)">${p.score_ipp ?? '—'} pts</div>
+        ${badgeGrado(p.grado_postburo || p.grado_ipp || null)}
+        <span class="vchip ${cls}">${lbl}</span>
+        ${evalI?.motivo_rechazo
+          ? `<span style="font-size:11px;color:var(--muted);font-style:italic;max-width:150px;
+              overflow:hidden;text-overflow:ellipsis;white-space:nowrap"
+              title="${evalI.motivo_rechazo}">"${evalI.motivo_rechazo}"</span>`
+          : ''}
+      </div>`;
+  }).join('') || '<div style="color:var(--muted);font-size:13px">Sin integrantes</div>';
+
+  const nivelColor = { estandar:'var(--green)', atencion:'var(--yellow)', prioritaria:'var(--red)' };
+  const nivelLabel = { estandar:'Estándar', atencion:'Atención', prioritaria:'Prioritaria' };
+
+  document.getElementById('modal-eval-body').innerHTML = `
+    <div class="row" style="gap:10px;flex-wrap:wrap;margin-bottom:16px">
+      ${asig ? `<span class="ce-chip">👤 ${asig.profiles?.email || '—'}</span>` : ''}
+      ${asig?.direccion ? `<span style="font-size:12px;color:var(--muted)">📍 ${asig.direccion}</span>` : ''}
+      ${estatusBadge(g.estatus)}
+    </div>
+
+    ${evalG ? `
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:18px">
+        <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin-bottom:${evalG.comentario_general?'14px':'0'}">
+          <div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:2px">Score grupal IPP</div>
+            <div style="font-size:36px;font-weight:800;font-family:'IBM Plex Mono',monospace;line-height:1;
+              color:${evalG.veredicto==='aprobar'?'var(--green)':'var(--red)'}">
+              ${evalG.score_ipp_grupal ?? evalG.score_ce ?? '—'}
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            ${evalG.grado_ipp_grupal ? badgeGrado(evalG.grado_ipp_grupal) : ''}
+            <span class="vchip ${evalG.veredicto==='aprobar'?'vchip-ok':'vchip-no'}">
+              ${evalG.veredicto==='aprobar'?'✅ Aprobado CE':'❌ No aprobado CE'}
+            </span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-left:auto">
+            ${evalG.nivel_revision ? `
+              <div style="font-size:12px;font-weight:600;color:${nivelColor[evalG.nivel_revision]||'var(--muted)'}">
+                Revisión: ${nivelLabel[evalG.nivel_revision]||evalG.nivel_revision}
+              </div>` : ''}
+            ${evalG.group_red_flag
+              ? '<div style="font-size:12px;color:var(--red);font-weight:600">🚩 Red flag grupal</div>'
+              : ''}
+            <div style="font-size:11px;color:var(--muted)">${new Date(evalG.created_at).toLocaleString('es-MX')}</div>
+          </div>
+        </div>
+        ${evalG.motivo_rechazo ? `
+          <div style="padding-top:12px;border-top:1px solid var(--border);font-size:13px">
+            <span style="font-weight:600;color:var(--red)">Motivo no aprobación:</span>
+            ${evalG.motivo_rechazo}
+          </div>` : ''}
+        ${evalG.comentario_general ? `
+          <div style="padding-top:12px;border-top:1px solid var(--border);font-size:13px;color:var(--muted)">
+            <span style="font-weight:600;color:var(--text)">Comentario CE:</span>
+            ${evalG.comentario_general}
+          </div>` : ''}
+      </div>
+    ` : `
+      <div style="background:var(--surface2);border-radius:10px;padding:14px;text-align:center;
+        color:var(--muted);font-size:13px;margin-bottom:18px">
+        Evaluación grupal aún no registrada
+      </div>`}
+
+    <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">
+      Integrantes (${ints.length})
+    </div>
+    <div>${intsHtml}</div>
+  `;
+
+  abrirModal('modal-eval');
+}
+</script>
+</body>
+</html>

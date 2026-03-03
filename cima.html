@@ -108,14 +108,12 @@
       <a class="nav-item" onclick="showView('nuevo-prospecto')" href="#">
         <span class="nav-icon">➕</span> Nuevo prospecto
       </a>
-      <a class="nav-item" onclick="showView('postburo')" href="#">
-        <span class="nav-icon">📄</span> Evaluación post-buró
-      </a>
+
     </div>
     <div class="nav-section">
       <div class="nav-label">Gestión</div>
       <a class="nav-item" onclick="showView('asignaciones')" href="#">
-        <span class="nav-icon">🗂️</span> Asignaciones CE
+        <span class="nav-icon">🗂️</span> Asignaciones CS
       </a>
     </div>
   </nav>
@@ -572,8 +570,8 @@
     <!-- ═══ VISTA: ASIGNACIONES CE ═══ -->
     <div id="view-asignaciones" class="view fade-in" style="display:none">
       <div class="page-header">
-        <div class="page-title">Asignaciones CE</div>
-        <div class="page-sub">Asigna grupos a coordinadores de campo y define dirección</div>
+        <div class="page-title">Asignaciones CS</div>
+        <div class="page-sub">Envía grupos consolidados al Coordinador de Supervisión (CS)</div>
       </div>
       <div class="table-wrap">
         <table>
@@ -644,10 +642,10 @@
 <div class="modal-overlay" id="modal-asignar">
   <div class="modal">
     <button class="modal-close" onclick="cerrarModal('modal-asignar')">✕</button>
-    <div class="modal-title">Asignar grupo</div>
+    <div class="modal-title">Enviar grupo al CS</div>
     <div class="form-grid">
       <div class="field full">
-        <label>CE (Coordinador de Evaluación)</label>
+        <label>CS (Coordinador de Supervisión)</label>
         <select id="a-ce"></select>
       </div>
       <div class="field full">
@@ -1445,9 +1443,9 @@ async function crearGrupo() {
 }
 
 async function cargarCEs() {
-  const { data } = await sb.from('profiles').select('id, email').eq('role', 'CE');
+  const { data } = await sb.from('profiles').select('id, email').eq('role', 'CS');
   const sel = document.getElementById('a-ce');
-  sel.innerHTML = '<option value="">Selecciona CE…</option>';
+  sel.innerHTML = '<option value="">Selecciona CS…</option>';
   (data || []).forEach(u => {
     const opt = document.createElement('option');
     opt.value = u.id; opt.textContent = u.email;

@@ -235,6 +235,7 @@ function estatusBadge(estatus) {
     'por_visitar':         'Por visitar',
     'en_visita':           'En visita',
     'activo':              'Activo',
+    'asignado_cs':         'Asignado CS',
   };
   const key = estatus || 'prospecto';
   const label = labels[key] || estatus || '—';

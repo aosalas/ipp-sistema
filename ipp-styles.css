@@ -592,6 +592,7 @@ tbody td { padding: 12px 16px; color: var(--text-2); }
 .estatus-por_visitar        { background: var(--yellow-bg); border-color: var(--yellow-chip); color: var(--yellow); }
 .estatus-en_visita          { background: var(--blue-bg);   border-color: var(--blue-chip);   color: var(--blue); }
 .estatus-activo             { background: var(--green-bg);  border-color: var(--green-chip);  color: var(--green); }
+.estatus-asignado_cs        { background: var(--purple-bg); border-color: var(--purple-chip); color: var(--purple); }
 
 /* ── Alerts ─────────────────────────────────────────── */
 .alert {
