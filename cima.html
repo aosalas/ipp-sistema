@@ -136,12 +136,12 @@
       </div>
       <div class="filters">
         <input class="search-input" id="search-prosp" placeholder="Buscar nombre o CURP…" oninput="filtrarProspectos()" />
-        <select class="filter-select" id="filter-grado" onchange="filtrarProspectos()">
-          <option value="">Todos los grados</option>
-          <option value="A">Grado A</option>
-          <option value="B">Grado B</option>
-          <option value="C">Grado C</option>
-          <option value="D">Grado D</option>
+        <select class="filter-select" id="filter-Calificación" onchange="filtrarProspectos()">
+          <option value="">Todos las calificaciones</option>
+          <option value="A">Calificación A</option>
+          <option value="B">Calificación B</option>
+          <option value="C">Calificación C</option>
+          <option value="D">Calificación D</option>
         </select>
         <select class="filter-select" id="filter-estatus" onchange="filtrarProspectos()">
           <option value="">Todos los estatus</option>
@@ -160,7 +160,7 @@
               <th>Nombre</th>
               <th>CURP</th>
               <th>Score IPP</th>
-              <th>Grado</th>
+              <th>Calificación</th>
               <th>Post-buró</th>
               <th>CDC</th>
               <th>Origen</th>
@@ -444,7 +444,7 @@
         <div class="score-display">
           <div>
             <div class="score-num" id="score-num">—</div>
-            <div id="grado-badge" style="margin-top:8px"></div>
+            <div id="Calificación-badge" style="margin-top:8px"></div>
           </div>
           <div class="score-bar-wrap">
             <div class="score-bar">
@@ -458,7 +458,7 @@
         <div id="block-alert" style="display:none">
           <div class="alert alert-danger">
             <span class="alert-icon">🚫</span>
-            <div><strong>BLOQUEO PRE-BURÓ:</strong> Grado D. No se procede a consulta CDC.</div>
+            <div><strong>BLOQUEO PRE-BURÓ:</strong> Calificación D. No se procede a consulta CDC.</div>
           </div>
         </div>
       </div>
@@ -904,8 +904,8 @@ function renderTablaProspectos(data) {
       <td><strong>${p.nombre_completo}</strong></td>
       <td><span style="font-family:'IBM Plex Mono',monospace;font-size:12px">${p.curp || '—'}</span></td>
       <td><span style="font-family:'IBM Plex Mono',monospace;font-weight:700">${p.score_ipp ?? '—'}</span></td>
-      <td>${badgeGrado(p.grado_ipp)}</td>
-      <td>${p.grado_postburo ? badgeGrado(p.grado_postburo) : '<span style="color:var(--muted);font-size:12px">Pendiente</span>'}</td>
+      <td>${badgeCalificación(p.Calificación_ipp)}</td>
+      <td>${p.Calificación_postburo ? badgeCalificación(p.Calificación_postburo) : '<span style="color:var(--muted);font-size:12px">Pendiente</span>'}</td>
       <td>${p.cdc_path
         ? `<span class="cdc-badge tiene">📄 CDC</span>`
         : `<span class="cdc-badge falta">Sin CDC</span>`}</td>
@@ -919,7 +919,7 @@ function renderTablaProspectos(data) {
           <button class="btn btn-secondary btn-sm" onclick="abrirSubirCDC('${p.id}', '${p.nombre_completo}', ${!!p.cdc_path})">
             ${p.cdc_path ? '🔄 CDC' : '📤 CDC'}
           </button>
-          ${p.estatus === 'prospecto' && p.grado_ipp !== 'D'
+          ${p.estatus === 'prospecto' && p.Calificación_ipp !== 'D'
             ? `<button class="btn btn-secondary btn-sm" onclick="irPostBuro('${p.id}')">Post-buró</button>`
             : ''}
           ${p.estatus === 'postburo_rechazado'
@@ -933,7 +933,7 @@ function renderTablaProspectos(data) {
 
 function filtrarProspectos() {
   const q = document.getElementById('search-prosp').value.toLowerCase();
-  const grado = document.getElementById('filter-grado').value;
+  const Calificación = document.getElementById('filter-Calificación').value;
   const estatus = document.getElementById('filter-estatus').value;
   const rows = document.querySelectorAll('#tabla-prospectos tr:not(.empty-row)');
   rows.forEach(r => {
@@ -941,7 +941,7 @@ function filtrarProspectos() {
     const g = r.children[3]?.textContent.trim();
     const e = r.children[5]?.textContent.trim();
     const show = (!q || text.includes(q)) &&
-                 (!grado || g.includes(grado)) &&
+                 (!Calificación || g.includes(Calificación)) &&
                  (!estatus || r.innerHTML.includes(`value="${estatus}"`));
     r.style.display = show ? '' : 'none';
   });
@@ -964,12 +964,12 @@ async function verProspecto(id) {
   const flujo = (p.ingresos_semanales||0)-(p.gastos_semanales||0);
 
   let pbHtml = '';
-  if (p.grado_postburo) {
+  if (p.Calificación_postburo) {
     const reglas = JSON.parse(p.reglas_postburo||'[]');
     pbHtml = `<div class="divider"></div>
     <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">📊 Post-buró</div>
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:${reglas.length?'10px':'0'}">
-      ${badgeGrado(p.grado_postburo)}
+      ${badgeCalificación(p.Calificación_postburo)}
       <span style="font-weight:700;color:${p.estatus==='postburo_rechazado'?'var(--red)':'var(--green)'}">${p.estatus_postburo||'—'}</span>
     </div>
     ${reglas.map(r=>`<div style="font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--muted);margin-bottom:4px">• ${r}</div>`).join('')}`;
@@ -983,10 +983,10 @@ async function verProspecto(id) {
         <div style="font-size:42px;font-weight:800;font-family:'IBM Plex Mono',monospace;line-height:1">${p.score_ipp??'—'}</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px">
-        ${badgeGrado(p.grado_ipp)}
+        ${badgeCalificación(p.Calificación_ipp)}
         ${estatusBadge(p.estatus)}
       </div>
-      ${p.grado_postburo?`<div style="margin-left:auto;text-align:right"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Post-buró</div>${badgeGrado(p.grado_postburo)}</div>`:''}
+      ${p.Calificación_postburo?`<div style="margin-left:auto;text-align:right"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Post-buró</div>${badgeCalificación(p.Calificación_postburo)}</div>`:''}
     </div>
 
     <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">📋 Datos personales</div>
@@ -1067,14 +1067,14 @@ function calcularScore() {
   if (!d.antiguedad_domicilio || !d.tipo_domicilio || !d.coincidencia_ine ||
       !d.antiguedad_negocio || !d.ubicacion_negocio || !d.exp_grupal) return;
 
-  const { score, grado } = calcularIPP(d);
+  const { score, Calificación } = calcularIPP(d);
   document.getElementById('score-num').textContent = score;
-  document.getElementById('grado-badge').innerHTML = badgeGrado(grado);
+  document.getElementById('Calificación-badge').innerHTML = badgeCalificación(Calificación);
 
   const fill = document.getElementById('score-fill');
   const colores = { A: 'var(--green)', B: 'var(--purple)', C: 'var(--yellow-chip)', D: 'var(--red)' };
   fill.style.width = score + '%';
-  fill.style.background = colores[grado];
+  fill.style.background = colores[Calificación];
 
   const descs = {
     A: 'Perfil excelente — Continúa a consulta CDC',
@@ -1082,8 +1082,8 @@ function calcularScore() {
     C: 'Perfil aceptable con reservas — Continúa a CDC',
     D: '🚫 BLOQUEO: Perfil insuficiente — NO se consulta CDC'
   };
-  document.getElementById('score-desc').textContent = descs[grado];
-  document.getElementById('block-alert').style.display = grado === 'D' ? 'block' : 'none';
+  document.getElementById('score-desc').textContent = descs[Calificación];
+  document.getElementById('block-alert').style.display = Calificación === 'D' ? 'block' : 'none';
 }
 
 // Recalculate when selects change
@@ -1122,7 +1122,7 @@ async function guardarProspecto() {
   const required = ['antiguedad_domicilio','tipo_domicilio','coincidencia_ine','antiguedad_negocio','ubicacion_negocio','exp_grupal'];
   if (required.some(k => !d[k])) { toast('Completa todos los campos de scoring (⚡)', 'error'); return; }
 
-  const { score, grado } = calcularIPP(d);
+  const { score, Calificación } = calcularIPP(d);
 
   const payload = {
     nombre_completo: nombre,
@@ -1139,8 +1139,8 @@ async function guardarProspecto() {
     estado: document.getElementById('f-estado').value,
     ...d,
     score_ipp: score,
-    grado_ipp: grado,
-    estatus: grado === 'D' ? 'rechazado_ipp' : 'prospecto',
+    Calificación_ipp: Calificación,
+    estatus: Calificación === 'D' ? 'rechazado_ipp' : 'prospecto',
     created_by: currentUser.id
   };
 
@@ -1171,7 +1171,7 @@ async function guardarProspecto() {
     btn.textContent = 'Guardar prospecto';
   }
 
-  toast(`Prospecto guardado. Score: ${score} — Grado ${grado}`);
+  toast(`Prospecto guardado. Score: ${score} — Calificación ${Calificación}`);
   cargarProspectos();
   showView('prospectos');
 }
@@ -1179,9 +1179,9 @@ async function guardarProspecto() {
 // ─── Post-buró ────────────────────────────────────────────
 async function cargarProspectosPB() {
   const { data } = await sb.from('prospectos')
-    .select('id, nombre_completo, score_ipp, grado_ipp')
+    .select('id, nombre_completo, score_ipp, Calificación_ipp')
     .in('estatus', ['prospecto'])
-    .neq('grado_ipp', 'D')
+    .neq('Calificación_ipp', 'D')
     .order('created_at', { ascending: false });
 
   prospectosPB = data || [];
@@ -1190,7 +1190,7 @@ async function cargarProspectosPB() {
   prospectosPB.forEach(p => {
     const opt = document.createElement('option');
     opt.value = p.id;
-    opt.textContent = `${p.nombre_completo} — Grado ${p.grado_ipp} (${p.score_ipp} pts)`;
+    opt.textContent = `${p.nombre_completo} — Calificación ${p.Calificación_ipp} (${p.score_ipp} pts)`;
     sel.appendChild(opt);
   });
   sel.onchange = () => cargarResumenPB(sel.value);
@@ -1211,7 +1211,7 @@ async function cargarResumenPB(id) {
         <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)">${p.curp}</div>
       </div>
       <div>Score: <strong style="font-size:24px;font-family:'IBM Plex Mono',monospace">${p.score_ipp}</strong></div>
-      <div>${badgeGrado(p.grado_ipp)}</div>
+      <div>${badgeCalificación(p.Calificación_ipp)}</div>
     </div>
   `;
   document.getElementById('pb-form').style.display = 'block';
@@ -1278,20 +1278,20 @@ function evaluarPostBuroUI() {
   if (!pbProspectoActual) return;
   const consultas = parseInt(document.getElementById('pb-consultas').value) || 0;
   const atrasos = parseInt(document.getElementById('pb-atrasos').value) || 0;
-  const resultado = evaluarPostBuro(pbProspectoActual.grado_ipp, cuentasCDC, consultas, atrasos);
+  const resultado = evaluarPostBuro(pbProspectoActual.Calificación_ipp, cuentasCDC, consultas, atrasos);
   pbResultadoActual = resultado;
 
   const colorFinal = resultado.rechazado ? 'var(--danger)' : 'var(--success)';
   document.getElementById('pb-resultado-content').innerHTML = `
     <div style="display:flex;gap:24px;align-items:center;margin-bottom:20px">
       <div>
-        <div style="font-size:12px;color:var(--muted)">Grado IPP pre-buró</div>
-        ${badgeGrado(pbProspectoActual.grado_ipp)}
+        <div style="font-size:12px;color:var(--muted)">Calificación IPP pre-buró</div>
+        ${badgeCalificación(pbProspectoActual.Calificación_ipp)}
       </div>
       <div style="font-size:20px;color:var(--muted)">→</div>
       <div>
-        <div style="font-size:12px;color:var(--muted)">Grado final post-buró</div>
-        ${badgeGrado(resultado.gradoFinal)}
+        <div style="font-size:12px;color:var(--muted)">Calificación final post-buró</div>
+        ${badgeCalificación(resultado.CalificaciónFinal)}
       </div>
       <div style="margin-left:auto">
         <div style="font-size:24px;font-weight:800;color:${colorFinal}">
@@ -1320,7 +1320,7 @@ async function guardarPostBuro() {
   const nuevoEstatus = pbResultadoActual.rechazado ? 'postburo_rechazado' : 'postburo_aprobado';
 
   const { error } = await sb.from('prospectos').update({
-    grado_postburo: pbResultadoActual.gradoFinal,
+    Calificación_postburo: pbResultadoActual.CalificaciónFinal,
     estatus_postburo: pbResultadoActual.estatus,
     reglas_postburo: JSON.stringify(pbResultadoActual.reglasActivadas),
     cuentas_cdc: JSON.stringify(cuentasCDC),
@@ -1368,11 +1368,11 @@ async function cargarGrupos() {
 
 // ── Estado grupo en formación ──────────────────────────────
 let gPool = [];       // prospectos disponibles cargados de BD
-let gSel  = [];       // [{id, nombre, grado}] seleccionados
+let gSel  = [];       // [{id, nombre, Calificación}] seleccionados
 
 async function abrirModalNuevoGrupo() {
   const { data } = await sb.from('prospectos')
-    .select('id, nombre_completo, grado_postburo')
+    .select('id, nombre_completo, Calificación_postburo')
     .eq('estatus', 'postburo_aprobado');
   gPool = data || [];
   gSel  = [];
@@ -1390,7 +1390,7 @@ function gRenderSelect() {
   gPool.filter(p => !usados.has(p.id)).forEach(p => {
     const o = document.createElement('option');
     o.value = p.id;
-    o.textContent = p.nombre_completo + ' (' + (p.grado_postburo||'—') + ')';
+    o.textContent = p.nombre_completo + ' (' + (p.Calificación_postburo||'—') + ')';
     sel.appendChild(o);
   });
 }
@@ -1401,7 +1401,7 @@ function gAgregar() {
   if (!id) { toast('Selecciona una prospecto primero', 'warn'); return; }
   const p = gPool.find(x => x.id === id);
   if (!p) return;
-  gSel.push({ id: p.id, nombre: p.nombre_completo, grado: p.grado_postburo });
+  gSel.push({ id: p.id, nombre: p.nombre_completo, Calificación: p.Calificación_postburo });
   gRenderSelect();
   gRenderLista();
 }
@@ -1426,7 +1426,7 @@ function gRenderLista() {
     `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px">
       <div style="display:flex;align-items:center;gap:10px">
         <span style="font-size:13px;font-weight:600">${i.nombre}</span>
-        ${badgeGrado(i.grado)}
+        ${badgeCalificación(i.Calificación)}
       </div>
       <button onclick="gQuitar('${i.id}')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:18px;line-height:1;padding:2px 6px" title="Quitar">✕</button>
     </div>`
@@ -1584,12 +1584,12 @@ function wzResumen() {
 
   let scoreHtml = '<div style="color:var(--muted);font-size:13px">Completa los campos de scoring para ver el resultado.</div>';
   if (camposOk) {
-    const { score, grado } = calcularIPP(d);
-    const desc = {A:'Perfil excelente',B:'Perfil bueno',C:'Perfil con reservas',D:'⚠️ Perfil insuficiente — Grado D'}[grado]||'';
+    const { score, Calificación } = calcularIPP(d);
+    const desc = {A:'Perfil excelente',B:'Perfil bueno',C:'Perfil con reservas',D:'⚠️ Perfil insuficiente — Calificación D'}[Calificación]||'';
     scoreHtml =
       `<div style="display:flex;align-items:center;gap:20px;background:var(--surface2);border-radius:10px;padding:14px 18px;margin-bottom:14px">
-        <div style="font-size:44px;font-weight:800;font-family:'IBM Plex Mono',monospace;line-height:1;color:${colores[grado]}">${score}</div>
-        <div>${badgeGrado(grado)}<div style="font-size:13px;color:var(--muted);margin-top:6px">${desc}</div></div>
+        <div style="font-size:44px;font-weight:800;font-family:'IBM Plex Mono',monospace;line-height:1;color:${colores[Calificación]}">${score}</div>
+        <div>${badgeCalificación(Calificación)}<div style="font-size:13px;color:var(--muted);margin-top:6px">${desc}</div></div>
       </div>`;
   }
 
