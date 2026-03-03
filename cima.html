@@ -51,6 +51,10 @@
     }
     .cdc-badge.tiene { background: var(--blue-bg);  border-color: var(--blue-chip);  color: var(--blue); }
     .cdc-badge.falta { background: var(--surface2); border-color: var(--border2);    color: var(--muted2); }
+    /* ── Origen badge ── */
+    .origen-badge  { display:inline-flex;align-items:center;gap:4px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid;white-space:nowrap; }
+    .origen-vambe  { background:#EDE7F6; border-color:#CE93D8; color:#512DA8; }
+    .origen-manual { background:var(--surface2); border-color:var(--border2); color:var(--muted2); }
 
     /* ── Wizard ── */
     .wz-bar {
@@ -159,6 +163,7 @@
               <th>Grado</th>
               <th>Post-buró</th>
               <th>CDC</th>
+              <th>Origen</th>
               <th>Estatus</th>
               <th>Acciones</th>
             </tr>
@@ -849,6 +854,13 @@ async function subirCDCModal() {
   cargarGrupos();
   cargarProspectosPB();
   cargarCEs();
+
+  // ── Realtime: reflejar inserciones/actualizaciones de prospectos en vivo ──
+  sb.channel('prospectos-realtime')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'prospectos' }, () => {
+      cargarProspectos();
+    })
+    .subscribe();
 })();
 
 function llenarEstados() {
@@ -884,7 +896,7 @@ async function cargarProspectos() {
 function renderTablaProspectos(data) {
   const tbody = document.getElementById('tabla-prospectos');
   if (!data.length) {
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="8">Sin prospectos registrados</td></tr>';
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="9">Sin prospectos registrados</td></tr>';
     return;
   }
   tbody.innerHTML = data.map(p => `
@@ -897,6 +909,9 @@ function renderTablaProspectos(data) {
       <td>${p.cdc_path
         ? `<span class="cdc-badge tiene">📄 CDC</span>`
         : `<span class="cdc-badge falta">Sin CDC</span>`}</td>
+      <td>${p.origen === 'vambe'
+        ? `<span class="origen-badge origen-vambe">🤖 Vambe</span>`
+        : `<span class="origen-badge origen-manual">✏️ Manual</span>`}</td>
       <td>${estatusBadge(p.estatus)}</td>
       <td>
         <div class="row">
