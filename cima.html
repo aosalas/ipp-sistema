@@ -481,7 +481,7 @@
           <div class="cdc-dropzone-icon">📂</div>
           <div class="cdc-dropzone-label">
             <strong>Arrastra el PDF o imagen aquí</strong><br>
-            o haz clic para seleccionar · PDF, JPG, PNG · máx 10 MB
+            o haz clic para seleccionar · PDF, JPG, PNG · máx 3 MB
           </div>
         </div>
         <div id="cdc-preview" style="display:none" class="cdc-file-preview">
@@ -679,7 +679,7 @@
       <div class="cdc-dropzone-icon">📂</div>
       <div class="cdc-dropzone-label">
         <strong>Arrastra el PDF o imagen aquí</strong><br>
-        o haz clic para seleccionar · PDF, JPG, PNG · máx 10 MB
+        o haz clic para seleccionar · PDF, JPG, PNG · máx 3 MB
       </div>
     </div>
     <div id="modal-cdc-preview" style="display:none" class="cdc-file-preview">
@@ -717,7 +717,7 @@ function cdcValidarArchivo(file) {
   if (!file) return null;
   const allowed = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
   if (!allowed.includes(file.type)) { toast('Solo PDF, JPG o PNG', 'error'); return null; }
-  if (file.size > 10 * 1024 * 1024) { toast('El archivo supera 10 MB', 'error'); return null; }
+  if (file.size > 3 * 1024 * 1024) { toast('El archivo supera 3 MB', 'error'); return null; }
   return file;
 }
 
