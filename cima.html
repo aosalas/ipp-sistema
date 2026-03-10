@@ -630,7 +630,7 @@
     <div style="margin-bottom:20px">
       <div style="font-size:12px;font-weight:600;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">
         Integrantes: <span id="g-count" style="color:var(--brand)">0</span>
-        <span style="font-weight:400"> (mínimo 2 para consolidar)</span>
+        <span style="font-weight:400"> (mínimo 1 para crear)</span>
       </div>
       <div id="g-lista" style="display:flex;flex-direction:column;gap:8px;min-height:44px">
         <div id="g-empty" style="color:var(--muted);font-size:13px;text-align:center;padding:12px;background:var(--surface2);border-radius:8px">Sin integrantes aún</div>
@@ -855,10 +855,17 @@ async function subirCDCModal() {
   cargarProspectosPB();
   cargarCEs();
 
-  // ── Realtime: reflejar inserciones/actualizaciones de prospectos en vivo ──
-  sb.channel('prospectos-realtime')
+  // ── Realtime: prospectos y grupos ──
+  sb.channel('ipp-realtime')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'prospectos' }, () => {
       cargarProspectos();
+      cargarProspectosPB();
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'grupos' }, () => {
+      cargarGrupos();
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'integrantes' }, () => {
+      cargarGrupos();
     })
     .subscribe();
 })();
@@ -925,6 +932,7 @@ function renderTablaProspectos(data) {
           ${p.estatus === 'postburo_rechazado'
             ? `<button class="btn btn-danger btn-sm" onclick="sustituirProspecto('${p.id}')">Sustituir</button>`
             : ''}
+          <button class="btn btn-danger btn-sm" onclick="eliminarProspecto('${p.id}', '${p.nombre_completo.replace(/'/g, "\\'")}')" title="Eliminar">🗑</button>
         </div>
       </td>
     </tr>
@@ -1390,7 +1398,7 @@ function gRenderSelect() {
   gPool.filter(p => !usados.has(p.id)).forEach(p => {
     const o = document.createElement('option');
     o.value = p.id;
-    o.textContent = p.nombre_completo + ' (' + (p.grado_postburo || p.grado_ipp || '—') + (p.grado_postburo ? '' : ' pre-buró') + ')';
+    o.textContent = p.nombre_completo + ' (' + (p.grado_postburo || p.grado_ipp || '—') + (p.grado_postburo ? '' : ' · pre-buró') + ')';
     sel.appendChild(o);
   });
 }
@@ -1417,7 +1425,7 @@ function gRenderLista() {
   const count  = document.getElementById('g-count');
   const btnOk  = document.getElementById('btn-crear-grupo');
   count.textContent = gSel.length;
-  btnOk.disabled = gSel.length < 2;
+  btnOk.disabled = gSel.length < 1;
   if (!gSel.length) {
     lista.innerHTML = '<div id="g-empty" style="color:var(--muted);font-size:13px;text-align:center;padding:12px;background:var(--surface2);border-radius:8px">Sin integrantes aún</div>';
     return;
@@ -1436,7 +1444,7 @@ function gRenderLista() {
 async function crearGrupo() {
   const nombre = document.getElementById('g-nombre').value.trim();
   if (!nombre) { toast('Nombre del grupo requerido', 'error'); return; }
-  if (gSel.length < 2) { toast('Mínimo 2 integrantes para consolidar el grupo', 'error'); return; }
+  if (gSel.length < 1) { toast('Agrega al menos 1 integrante para crear el grupo', 'error'); return; }
 
   const btn = document.getElementById('btn-crear-grupo');
   btn.disabled = true; btn.textContent = 'Creando…';
@@ -1519,6 +1527,19 @@ async function sustituirProspecto(id) {
   if (!(await confirm_dialog('¿Marcar este prospecto como sustituido?'))) return;
   await sb.from('prospectos').update({ estatus: 'sustituido' }).eq('id', id);
   toast('Prospecto marcado como sustituido');
+  cargarProspectos();
+}
+
+async function eliminarProspecto(id, nombre) {
+  if (!(await confirm_dialog(`¿Eliminar definitivamente a <strong>${nombre}</strong>?<br><br>Esta acción no se puede deshacer. Si la prospecto tiene CDC cargado, también se eliminará.`))) return;
+  // Eliminar CDC de storage si existe
+  const { data: p } = await sb.from('prospectos').select('cdc_path').eq('id', id).single();
+  if (p?.cdc_path) {
+    await sb.storage.from('cdc-documentos').remove([p.cdc_path]);
+  }
+  const { error } = await sb.from('prospectos').delete().eq('id', id);
+  if (error) { toast('Error al eliminar: ' + error.message, 'error'); return; }
+  toast(`Prospecto "${nombre}" eliminado`, 'success');
   cargarProspectos();
 }
 
