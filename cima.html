@@ -630,7 +630,7 @@
     <div style="margin-bottom:20px">
       <div style="font-size:12px;font-weight:600;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">
         Integrantes: <span id="g-count" style="color:var(--brand)">0</span>
-        <span style="font-weight:400"> (mínimo 3 para consolidar)</span>
+        <span style="font-weight:400"> (mínimo 2 para consolidar)</span>
       </div>
       <div id="g-lista" style="display:flex;flex-direction:column;gap:8px;min-height:44px">
         <div id="g-empty" style="color:var(--muted);font-size:13px;text-align:center;padding:12px;background:var(--surface2);border-radius:8px">Sin integrantes aún</div>
@@ -1372,8 +1372,8 @@ let gSel  = [];       // [{id, nombre, grado}] seleccionados
 
 async function abrirModalNuevoGrupo() {
   const { data } = await sb.from('prospectos')
-    .select('id, nombre_completo, grado_postburo')
-    .eq('estatus', 'postburo_aprobado');
+    .select('id, nombre_completo, grado_ipp, grado_postburo')
+    .in('estatus', ['postburo_aprobado', 'pre_aprobado']);
   gPool = data || [];
   gSel  = [];
   document.getElementById('g-nombre').value = '';
@@ -1390,7 +1390,7 @@ function gRenderSelect() {
   gPool.filter(p => !usados.has(p.id)).forEach(p => {
     const o = document.createElement('option');
     o.value = p.id;
-    o.textContent = p.nombre_completo + ' (' + (p.grado_postburo||'—') + ')';
+    o.textContent = p.nombre_completo + ' (' + (p.grado_postburo || p.grado_ipp || '—') + (p.grado_postburo ? '' : ' pre-buró') + ')';
     sel.appendChild(o);
   });
 }
@@ -1401,7 +1401,7 @@ function gAgregar() {
   if (!id) { toast('Selecciona una prospecto primero', 'warn'); return; }
   const p = gPool.find(x => x.id === id);
   if (!p) return;
-  gSel.push({ id: p.id, nombre: p.nombre_completo, grado: p.grado_postburo });
+  gSel.push({ id: p.id, nombre: p.nombre_completo, grado: p.grado_postburo || p.grado_ipp });
   gRenderSelect();
   gRenderLista();
 }
@@ -1417,7 +1417,7 @@ function gRenderLista() {
   const count  = document.getElementById('g-count');
   const btnOk  = document.getElementById('btn-crear-grupo');
   count.textContent = gSel.length;
-  btnOk.disabled = gSel.length < 3;
+  btnOk.disabled = gSel.length < 2;
   if (!gSel.length) {
     lista.innerHTML = '<div id="g-empty" style="color:var(--muted);font-size:13px;text-align:center;padding:12px;background:var(--surface2);border-radius:8px">Sin integrantes aún</div>';
     return;
@@ -1436,7 +1436,7 @@ function gRenderLista() {
 async function crearGrupo() {
   const nombre = document.getElementById('g-nombre').value.trim();
   if (!nombre) { toast('Nombre del grupo requerido', 'error'); return; }
-  if (gSel.length < 3) { toast('Mínimo 3 integrantes para consolidar el grupo', 'error'); return; }
+  if (gSel.length < 2) { toast('Mínimo 2 integrantes para consolidar el grupo', 'error'); return; }
 
   const btn = document.getElementById('btn-crear-grupo');
   btn.disabled = true; btn.textContent = 'Creando…';

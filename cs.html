@@ -103,6 +103,258 @@
     @media (max-width: 768px) {
       .cs-stats { grid-template-columns: repeat(2, 1fr); }
     }
+
+    /* ── Vista expediente ── */
+    .exp-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 600; color: var(--muted);
+      cursor: pointer; margin-bottom: 20px;
+      background: none; border: none; padding: 0;
+    }
+    .exp-back:hover { color: var(--text); }
+
+    /* Score Ring */
+    .exp-header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .exp-ring-wrap { position: relative; width: 96px; height: 96px; flex-shrink: 0; }
+    .exp-ring-wrap svg { transform: rotate(-90deg); }
+    .exp-ring-center {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .exp-ring-score { font-size: 22px; font-weight: 800; line-height: 1; }
+    .exp-ring-label { font-size: 9px; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .exp-header-meta { flex: 1; min-width: 0; }
+    .exp-grupo-name  { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+    .exp-meta-row    { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; margin-bottom: 8px; }
+    .exp-meta-item   { font-size: 12px; color: var(--muted); }
+    .exp-veredicto-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      border-radius: 99px; padding: 5px 14px;
+      font-size: 13px; font-weight: 700; border: 1.5px solid;
+    }
+    .exp-v-aprobar  { background: var(--green-bg);  border-color: var(--green-chip); color: var(--green); }
+    .exp-v-revisar  { background: #FFF8E1;           border-color: #E0A800;           color: #7A5800; }
+    .exp-v-noaprobar{ background: var(--red-bg);     border-color: var(--red-chip);   color: var(--red); }
+
+    /* Secciones colapsables */
+    .exp-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .exp-section-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; cursor: pointer; user-select: none;
+    }
+    .exp-section-head:hover { background: var(--surface2); }
+    .exp-section-title {
+      font-size: 13px; font-weight: 700;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .exp-section-chev { font-size: 11px; color: var(--muted); transition: transform 0.2s; }
+    .exp-section.open .exp-section-chev { transform: rotate(180deg); }
+    .exp-section-body { display: none; padding: 0 18px 18px; }
+    .exp-section.open .exp-section-body { display: block; }
+
+    /* Visita única */
+    .exp-score-visita {
+      display: flex; align-items: center; gap: 16px;
+      padding: 14px 0; border-bottom: 1px solid var(--border);
+      margin-bottom: 14px; flex-wrap: wrap;
+    }
+    .exp-score-big {
+      font-size: 40px; font-weight: 800;
+      font-family: 'IBM Plex Mono', monospace; line-height: 1;
+    }
+    .exp-nivel-chip {
+      border-radius: 8px; padding: 4px 12px;
+      font-size: 12px; font-weight: 700; border: 1px solid;
+    }
+    .exp-nivel-estandar  { background: var(--green-bg);  border-color: var(--green-chip); color: var(--green); }
+    .exp-nivel-atencion  { background: #FFF8E1;           border-color: #E0A800;           color: #7A5800; }
+    .exp-nivel-prioritaria{ background: var(--red-bg);   border-color: var(--red-chip);   color: var(--red); }
+
+    .exp-dims-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 8px; margin-bottom: 14px;
+    }
+    .exp-dim-card {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 12px;
+      display: flex; align-items: center; gap: 8px; font-size: 13px;
+    }
+
+    /* Contadores integrantes */
+    .exp-int-summary {
+      display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;
+    }
+    .exp-int-counter {
+      flex: 1; min-width: 80px;
+      border-radius: 8px; padding: 10px;
+      text-align: center; font-size: 11px; font-weight: 600;
+      border: 1px solid;
+    }
+    .exp-int-n { font-size: 22px; font-weight: 800; font-family: 'IBM Plex Mono', monospace; display: block; }
+    .eic-ok   { background: var(--green-bg);  border-color: var(--green-chip); color: var(--green); }
+    .eic-warn { background: #FFF8E1;           border-color: #E0A800;           color: #7A5800; }
+    .eic-flag { background: var(--red-bg);     border-color: var(--red-chip);   color: var(--red); }
+
+    /* Cards integrante en visita */
+    .exp-member-card {
+      border-radius: 8px; border: 1px solid var(--border);
+      margin-bottom: 8px; overflow: hidden;
+    }
+    .exp-member-card.st-ok   { border-left: 4px solid var(--green); }
+    .exp-member-card.st-warn { border-left: 4px solid #E0A800; }
+    .exp-member-card.st-flag { border-left: 4px solid var(--red); }
+    .exp-member-head {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; cursor: pointer;
+    }
+    .exp-member-name   { font-size: 13px; font-weight: 600; flex: 1; }
+    .exp-member-action { font-size: 11px; color: var(--muted); }
+    .exp-member-detail {
+      display: none; padding: 0 14px 12px;
+      border-top: 1px solid var(--border);
+    }
+    .exp-member-card.open .exp-member-detail { display: block; }
+    .exp-reason-chip {
+      display: inline-block; background: var(--surface2);
+      border: 1px solid var(--border2); border-radius: 99px;
+      padding: 2px 8px; font-size: 11px; margin: 2px 2px 0 0;
+    }
+
+    /* Notas CE */
+    .exp-nota-card {
+      border-radius: 8px; padding: 12px 14px;
+      margin-bottom: 8px; display: flex; gap: 10px;
+      align-items: flex-start; font-size: 13px;
+    }
+    .exp-nota-alerta { background: #FFF8E1; border: 1px solid #E0A800; }
+    .exp-nota-ok     { background: var(--green-bg); border: 1px solid var(--green-chip); }
+
+    /* Alertas grupales */
+    .exp-alerta-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .exp-alerta-row:last-child { border-bottom: none; }
+    .exp-alerta-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .exp-alerta-detail { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+    /* Capacidad de pago */
+    .exp-cap-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 10px; margin-bottom: 12px;
+    }
+    .exp-cap-cell {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px;
+    }
+    .exp-cap-lbl  { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+    .exp-cap-val  { font-size: 18px; font-weight: 800; font-family: 'IBM Plex Mono', monospace; }
+    .exp-ratio-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 0; border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .exp-ratio-row:last-child { border-bottom: none; }
+
+    /* Detalle por integrante */
+    .exp-int-card {
+      border: 1px solid var(--border); border-radius: 10px;
+      margin-bottom: 10px; overflow: hidden;
+    }
+    .exp-int-head {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; cursor: pointer;
+    }
+    .exp-int-head:hover { background: var(--surface2); }
+    .exp-int-name  { font-size: 14px; font-weight: 700; flex: 1; }
+    .exp-int-body  { display: none; padding: 0 16px 14px; border-top: 1px solid var(--border); }
+    .exp-int-card.open .exp-int-body { display: block; }
+    .exp-int-tabs  { display: flex; gap: 4px; margin: 12px 0 10px; }
+    .exp-int-tab {
+      padding: 5px 12px; border-radius: 6px; font-size: 12px;
+      font-weight: 600; cursor: pointer; border: 1px solid var(--border);
+      background: var(--surface2); color: var(--muted);
+    }
+    .exp-int-tab.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+    .exp-int-tab-body > div { display: none; }
+    .exp-int-tab-body > div.active { display: block; }
+    .exp-score-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+    }
+    .exp-score-row:last-child { border-bottom: none; }
+
+    /* Barra de acción sticky */
+    .exp-action-bar {
+      position: sticky; bottom: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex; gap: 12px; justify-content: flex-end;
+      z-index: 100;
+      margin: 0 -24px -24px;
+    }
+    .exp-btn-aprobar {
+      background: var(--green); color: #fff;
+      border: none; border-radius: 8px;
+      padding: 10px 24px; font-size: 14px; font-weight: 700;
+      cursor: pointer; font-family: 'Sora', sans-serif;
+    }
+    .exp-btn-revision {
+      background: #FFF8E1; color: #7A5800;
+      border: 1.5px solid #E0A800; border-radius: 8px;
+      padding: 10px 24px; font-size: 14px; font-weight: 700;
+      cursor: pointer; font-family: 'Sora', sans-serif;
+    }
+    .exp-btn-aprobar:hover  { opacity: 0.9; }
+    .exp-btn-revision:hover { opacity: 0.9; }
+
+    /* Modal decisión CS */
+    .exp-modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 9000;
+      display: none; align-items: center; justify-content: center;
+    }
+    .exp-modal-overlay.show { display: flex; }
+    .exp-modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px;
+      max-width: 420px; width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+    .exp-modal-title { font-size: 16px; font-weight: 800; margin-bottom: 6px; }
+    .exp-modal-sub   { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+    .exp-modal textarea {
+      width: 100%; min-height: 90px;
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 10px 12px; font-size: 13px;
+      font-family: 'IBM Plex Sans', sans-serif;
+      background: var(--surface2); color: var(--text);
+      resize: vertical; margin-bottom: 16px; box-sizing: border-box;
+    }
+    .exp-modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
   </style>
 </head>
 <body>
@@ -142,6 +394,56 @@
 
   <!-- MAIN -->
   <main class="main">
+
+    <!-- ═══ VISTA: EXPEDIENTE GRUPAL (CS) ═══ -->
+    <div id="view-expediente" class="view fade-in" style="display:none">
+      <button class="exp-back" onclick="cerrarExpediente()">← Volver a grupos</button>
+
+      <!-- Encabezado Score Ring -->
+      <div class="exp-header" id="exp-header"></div>
+
+      <!-- Sección 1: Visita Única -->
+      <div class="exp-section open" id="exp-sec-visita">
+        <div class="exp-section-head" onclick="toggleExpSection('exp-sec-visita')">
+          <div class="exp-section-title">📋 Resultado de Visita Única</div>
+          <span class="exp-section-chev">▼</span>
+        </div>
+        <div class="exp-section-body" id="exp-body-visita"></div>
+      </div>
+
+      <!-- Sección 2: Alertas grupales -->
+      <div class="exp-section open" id="exp-sec-alertas">
+        <div class="exp-section-head" onclick="toggleExpSection('exp-sec-alertas')">
+          <div class="exp-section-title">⚠️ Alertas del grupo</div>
+          <span class="exp-section-chev">▼</span>
+        </div>
+        <div class="exp-section-body" id="exp-body-alertas"></div>
+      </div>
+
+      <!-- Sección 3: Capacidad de pago -->
+      <div class="exp-section" id="exp-sec-cap">
+        <div class="exp-section-head" onclick="toggleExpSection('exp-sec-cap')">
+          <div class="exp-section-title">💰 Capacidad de pago</div>
+          <span class="exp-section-chev">▼</span>
+        </div>
+        <div class="exp-section-body" id="exp-body-cap"></div>
+      </div>
+
+      <!-- Sección 4: Detalle por integrante -->
+      <div class="exp-section" id="exp-sec-ints">
+        <div class="exp-section-head" onclick="toggleExpSection('exp-sec-ints')">
+          <div class="exp-section-title">👤 Detalle por integrante</div>
+          <span class="exp-section-chev">▼</span>
+        </div>
+        <div class="exp-section-body" id="exp-body-ints"></div>
+      </div>
+
+      <!-- Barra de acción sticky -->
+      <div class="exp-action-bar">
+        <button class="exp-btn-revision" onclick="abrirDecisionCS('revision')">⚑ Solicitar revisión</button>
+        <button class="exp-btn-aprobar"  onclick="abrirDecisionCS('aprobar')">✓ Aprobar grupo</button>
+      </div>
+    </div>
 
     <!-- ═══ VISTA: GRUPOS RECIBIDOS ═══ -->
     <div id="view-grupos" class="view fade-in">
@@ -279,6 +581,19 @@
     <button class="modal-close" onclick="cerrarModal('modal-eval')">✕</button>
     <div class="modal-title" id="modal-eval-titulo">Detalle evaluación</div>
     <div id="modal-eval-body"></div>
+  </div>
+</div>
+
+<!-- MODAL: Decisión CS -->
+<div class="exp-modal-overlay" id="modal-decision-cs">
+  <div class="exp-modal">
+    <div class="exp-modal-title" id="modal-decision-title">Aprobar grupo</div>
+    <div class="exp-modal-sub"   id="modal-decision-sub">Escribe un comentario para registrar tu decisión.</div>
+    <textarea id="modal-decision-comentario" placeholder="Comentario obligatorio…"></textarea>
+    <div class="exp-modal-actions">
+      <button class="btn btn-secondary" onclick="cerrarDecisionCS()">Cancelar</button>
+      <button class="btn btn-primary"   id="modal-decision-confirm" onclick="confirmarDecisionCS()">Confirmar</button>
+    </div>
   </div>
 </div>
 
@@ -427,7 +742,7 @@ function renderGrupos(lista) {
           </div>
           <div class="row" style="gap:8px">
             ${evalG
-              ? `<button class="btn btn-secondary btn-sm" onclick="verEvaluacion('${g.id}')">Ver evaluación</button>`
+              ? `<button class="btn btn-secondary btn-sm" onclick="verExpediente('${g.id}')">Ver expediente</button>`
               : ''}
             <button class="btn btn-secondary btn-sm"
               onclick="abrirAsignarCE('${g.id}','${g.nombre.replace(/'/g,"\\'")}','${asig?.ce_id||''}','${(asig?.direccion||'').replace(/'/g,"\\'")}')">
@@ -558,7 +873,7 @@ function renderTablaEvaluaciones() {
         </td>
         <td>${nivelMap[evalG.nivel_revision] || evalG.nivel_revision || '—'}</td>
         <td>
-          <button class="btn btn-secondary btn-sm" onclick="verEvaluacion('${g.id}')">Ver detalle</button>
+          <button class="btn btn-secondary btn-sm" onclick="verExpediente('${g.id}')">Ver expediente</button>
         </td>
       </tr>`;
   }).join('');
@@ -660,3 +975,393 @@ function verEvaluacion(grupoId) {
 </script>
 </body>
 </html>
+<script>
+// ═══════════════════════════════════════════════════════════
+// VISTA EXPEDIENTE CS
+// ═══════════════════════════════════════════════════════════
+let expGrupoActual = null;
+let expDecisionTipo = null;
+
+const EXP_DIMS = [
+  { name: 'Arranque del grupo',          qs: [0,1,2], label: 'V1 · V2 · V3'  },
+  { name: 'Ubicabilidad',                qs: [3,4],   label: 'V4 · V5'       },
+  { name: 'Verificabilidad e identidad', qs: [5,6,7], label: 'V6 · V7 · V8'  },
+  { name: 'Comprensión del producto',    qs: [8,9],   label: 'V9 · V10'      },
+];
+const EXP_REASON = ['Asistencia','Ayuda ajena','Dominancia','Domicilio','Negocio','Identidad','Inconsistencia','Buró','Solidario','Compromiso'];
+const EG_VARS_IDS = ['V1','V2','V3','V4','V5','V6','V7','V8','V9','V10'];
+
+function verExpediente(grupoId) {
+  const g = todosGrupos.find(x => x.id === grupoId);
+  if (!g) return;
+  expGrupoActual = g;
+  showView('expediente');
+  renderExpediente(g);
+}
+
+function cerrarExpediente() {
+  expGrupoActual = null;
+  showView('grupos');
+}
+
+function toggleExpSection(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function renderExpediente(g) {
+  const evalG = g.evaluaciones_grupales?.[0];
+  const ints  = g.integrantes || [];
+  renderExpHeader(g, ints, evalG);
+  renderExpVisita(evalG);
+  renderExpAlertas(ints);
+  renderExpCapacidad(ints);
+  renderExpIntegrantes(ints);
+}
+
+// ── Encabezado Score Ring ─────────────────────────────────
+function renderExpHeader(g, ints, evalG) {
+  const score = evalG?.score_ipp_grupal ?? 0;
+  const grado = evalG?.grado_ipp_grupal ?? '—';
+  const asig  = g.asignaciones_ce?.[0];
+
+  const nD = ints.filter(i => {
+    const p = i.prospectos;
+    return p?.grado_postburo === 'D' || (!p?.grado_postburo && p?.grado_ipp === 'D');
+  }).length;
+
+  let vClass, vIcon, vText;
+  if (nD === 0)     { vClass='exp-v-aprobar';   vIcon='✓'; vText='Sugerencia: Aprobar'; }
+  else if (nD <= 2) { vClass='exp-v-revisar';   vIcon='⚑'; vText=`Sugerencia: Revisar (${nD} con grado D)`; }
+  else              { vClass='exp-v-noaprobar'; vIcon='✕'; vText=`Sugerencia: No aprobar (${nD} con grado D)`; }
+
+  const ringColor = { A:'#22c55e', B:'#7c3aed', C:'#E0A800', D:'#ef4444' }[grado] || '#94a3b8';
+  const r = 40; const circ = 2 * Math.PI * r;
+  const dash = (Math.min(score,100) / 100) * circ;
+
+  document.getElementById('exp-header').innerHTML = `
+    <div class="exp-ring-wrap">
+      <svg width="96" height="96" viewBox="0 0 96 96">
+        <circle cx="48" cy="48" r="${r}" fill="none" stroke="var(--border)" stroke-width="10"/>
+        <circle cx="48" cy="48" r="${r}" fill="none" stroke="${ringColor}" stroke-width="10"
+          stroke-dasharray="${dash} ${circ}" stroke-linecap="round"
+          style="transition:stroke-dasharray 0.8s ease"/>
+      </svg>
+      <div class="exp-ring-center">
+        <span class="exp-ring-score" style="color:${ringColor}">${score}</span>
+        <span class="exp-ring-label">IPP</span>
+      </div>
+    </div>
+    <div class="exp-header-meta">
+      <div class="exp-grupo-name">${g.nombre}</div>
+      <div class="exp-meta-row">
+        <span class="exp-meta-item">👥 ${g.num_integrantes || ints.length} integrantes</span>
+        ${asig ? `<span class="exp-meta-item">👤 ${asig.profiles?.email || '—'}</span>` : ''}
+        ${asig?.direccion ? `<span class="exp-meta-item">📍 ${asig.direccion}</span>` : ''}
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        ${badgeGrado(grado)}
+        ${estatusBadge(g.estatus)}
+        <span class="exp-veredicto-chip ${vClass}">${vIcon} ${vText}</span>
+      </div>
+    </div>`;
+}
+
+// ── Sección 1: Visita única ───────────────────────────────
+function renderExpVisita(evalG) {
+  const el = document.getElementById('exp-body-visita');
+  if (!evalG) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:8px 0">Evaluación grupal aún no registrada por el CE.</div>';
+    return;
+  }
+
+  const scoreV  = evalG.score_ce ?? 0;
+  const nivel   = evalG.nivel_revision || 'atencion';
+  const nMap    = { estandar:['Revisión estándar','✅'], atencion:['Revisión con atención','⚠️'], prioritaria:['Revisión prioritaria','🚩'] };
+  const [nLabel, nIcon] = nMap[nivel] || nMap.atencion;
+  const nCls    = `exp-nivel-${nivel}`;
+  const respuestas = evalG.respuestas_ce || {};
+
+  const dimIcon = (qs) => {
+    const vals = qs.map(qi => respuestas[EG_VARS_IDS[qi]]?.val_raw);
+    if (vals.some(v => v==='no'))  return '🚩';
+    if (vals.some(v => v==='par')) return '⚠️';
+    if (vals.every(v => !v))       return '—';
+    return '✅';
+  };
+
+  const estadoInts = evalG.estado_integrantes || [];
+  const nOk   = estadoInts.filter(m => m.status==='ok').length;
+  const nWarn = estadoInts.filter(m => m.status==='warn').length;
+  const nFlag = estadoInts.filter(m => m.status==='flag').length;
+
+  const memberCards = estadoInts.map((m, mi) => {
+    const icon   = m.status==='flag'?'🚩':m.status==='warn'?'⚠️':'✅';
+    const action = m.status==='flag'?'Revisar — posible exclusión':m.status==='warn'?'Revisar':'Sin alertas';
+    const preguntasHTML = (m.preguntas_con_alerta||[]).map(vid => {
+      const r = respuestas[vid]||{};
+      return `<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:12px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;margin-right:6px">${vid}</span>
+        ${r.pregunta?r.pregunta.substring(0,60)+(r.pregunta.length>60?'…':''):''}
+        ${r.comentario?`<div style="color:var(--muted);font-style:italic;margin-top:3px">"${r.comentario}"</div>`:''}
+      </div>`;
+    }).join('');
+    const reasons = (m.preguntas_con_alerta||[]).map(vid =>
+      `<span class="exp-reason-chip">${EXP_REASON[EG_VARS_IDS.indexOf(vid)]||vid}</span>`
+    ).join('');
+    return `<div class="exp-member-card st-${m.status}" id="expm-${mi}">
+      <div class="exp-member-head" onclick="document.getElementById('expm-${mi}').classList.toggle('open')">
+        <span>${icon}</span>
+        <div class="exp-member-name">${m.nombre}</div>
+        <div class="exp-member-action">${action}</div>
+        <div>${reasons}</div>
+        ${preguntasHTML?'<span style="font-size:10px;color:var(--muted)">▼</span>':''}
+      </div>
+      ${preguntasHTML?`<div class="exp-member-detail">${preguntasHTML}</div>`:''}
+    </div>`;
+  }).join('');
+
+  const notas = evalG.notas_ce || {};
+  const notasHTML = `
+    ${notas.urgencia?`<div class="exp-nota-card exp-nota-alerta"><span>⚠️</span><div><strong>Urgencia detectada</strong><div style="font-size:12px;color:#7A5800;margin-top:2px">El CE reportó prisa inusual por cerrar el trámite.</div></div></div>`:''}
+    ${notas.interaccion?`<div class="exp-nota-card exp-nota-alerta"><span>⚠️</span><div><strong>Interacción no natural</strong><div style="font-size:12px;color:#7A5800;margin-top:2px">El CE reportó que el grupo no parece real.</div></div></div>`:''}
+    ${!notas.urgencia&&!notas.interaccion?`<div class="exp-nota-card exp-nota-ok"><span>✅</span><div><strong>Sin señales de alerta</strong><div style="font-size:12px;color:var(--green);margin-top:2px">El CE no detectó urgencia ni interacción no natural.</div></div></div>`:''}
+    ${evalG.comentario_general?`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:13px;margin-top:8px"><span style="font-weight:700;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em">Observaciones CE</span><p style="margin:6px 0 0">${evalG.comentario_general}</p></div>`:''}
+  `;
+
+  el.innerHTML = `
+    <div class="exp-score-visita">
+      <div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:2px">Score CE</div>
+        <div class="exp-score-big" style="color:${scoreV>=90?'var(--green)':scoreV>=70?'#E0A800':'var(--red)'}">${scoreV}</div>
+      </div>
+      <div style="flex:1">
+        <span class="exp-nivel-chip ${nCls}">${nIcon} ${nLabel}</span>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px">
+          ${evalG.veredicto==='aprobar'
+            ?'<span style="color:var(--green);font-weight:600">✅ CE aprobó el grupo</span>'
+            :'<span style="color:var(--red);font-weight:600">❌ CE no aprobó el grupo</span>'}
+          ${evalG.group_red_flag?' · <span style="color:var(--red)">🚩 Red flag grupal</span>':''}
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--muted)">${new Date(evalG.created_at).toLocaleDateString('es-MX')}</div>
+    </div>
+    <div class="exp-dims-grid">
+      ${EXP_DIMS.map(d=>`<div class="exp-dim-card"><span>${dimIcon(d.qs)}</span><div><div style="font-size:12px;font-weight:600">${d.name}</div><div style="font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace">${d.label}</div></div></div>`).join('')}
+    </div>
+    <div class="exp-int-summary">
+      <div class="exp-int-counter eic-ok"><span class="exp-int-n">${nOk}</span>Sin alertas</div>
+      <div class="exp-int-counter eic-warn"><span class="exp-int-n">${nWarn}</span>⚠️ Revisar</div>
+      <div class="exp-int-counter eic-flag"><span class="exp-int-n">${nFlag}</span>🚩 Crítica</div>
+    </div>
+    ${memberCards}
+    <div style="margin-top:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Notas del CE para CS</div>
+      ${notasHTML}
+    </div>`;
+}
+
+// ── Sección 2: Alertas grupales ───────────────────────────
+function renderExpAlertas(ints) {
+  const el = document.getElementById('exp-body-alertas');
+  const alertas = [];
+
+  ints.forEach(i => {
+    const p = i.prospectos;
+    if (!p) return;
+    let cuentas = [];
+    try { cuentas = JSON.parse(p.cuentas_cdc||'[]'); } catch(e) {}
+
+    const saldoTotal = cuentas.reduce((s,c)=>s+(parseFloat(c.saldo)||0),0);
+    if (saldoTotal > 25000) alertas.push({ icono:'💳', titulo:'Deuda individual alta',
+      detalle:`${p.nombre_completo} — saldo: $${saldoTotal.toLocaleString('es-MX')}` });
+
+    const acreedores = [...new Set(cuentas.filter(c=>c.ultimos12m).map(c=>c.otorgante))];
+    if (acreedores.length >= 4) alertas.push({ icono:'🏦', titulo:'Múltiples instituciones',
+      detalle:`${p.nombre_completo} — ${acreedores.length} acreedores activos` });
+
+    const vencido = cuentas.reduce((s,c)=>s+(parseFloat(c.saldo_vencido)||0),0);
+    if (vencido > 5000) alertas.push({ icono:'🔴', titulo:'Saldo vencido significativo',
+      detalle:`${p.nombre_completo} — vencido: $${vencido.toLocaleString('es-MX')}` });
+  });
+
+  // Familiares
+  const apellidos = ints.map(i=>{
+    const n = i.prospectos?.nombre_completo||''; const parts=n.trim().split(/\s+/);
+    return parts.length>=3?`${parts[1]} ${parts[2]}`:parts[1]||'';
+  });
+  const apCount = {};
+  apellidos.forEach(a=>{ if(a) apCount[a]=(apCount[a]||0)+1; });
+  Object.entries(apCount).forEach(([ap,n])=>{
+    if(n>=2) alertas.push({ icono:'👨‍👩‍👧', titulo:'Posibles familiares en el grupo',
+      detalle:`Apellidos "${ap}" aparecen ${n} veces` });
+  });
+
+  // Concentración D
+  const nD = ints.filter(i=>{ const p=i.prospectos; return p?.grado_postburo==='D'||(!p?.grado_postburo&&p?.grado_ipp==='D'); }).length;
+  if (nD>=2) alertas.push({ icono:'⚠️', titulo:'Concentración de grado D',
+    detalle:`${nD} integrantes con grado D` });
+
+  // Disparidad capacidad de pago
+  const caps = ints.map(i=>parseFloat(i.prospectos?.capacidad_pago)||0).filter(v=>v>0);
+  if (caps.length>=2) {
+    const disp = Math.max(...caps)-Math.min(...caps);
+    if (disp>3000) alertas.push({ icono:'📊', titulo:'Disparidad en capacidad de pago',
+      detalle:`Diferencia de $${disp.toLocaleString('es-MX')} entre integrantes` });
+  }
+
+  if (!alertas.length) {
+    el.innerHTML = `<div class="exp-nota-card exp-nota-ok" style="margin-top:0"><span>✅</span><div><strong>Sin alertas grupales</strong><div style="font-size:12px;color:var(--green);margin-top:2px">No se detectaron señales de riesgo grupal.</div></div></div>`;
+    return;
+  }
+  el.innerHTML = alertas.map(a=>`<div class="exp-alerta-row"><span class="exp-alerta-icon">${a.icono}</span><div><div style="font-weight:600">${a.titulo}</div><div class="exp-alerta-detail">${a.detalle}</div></div></div>`).join('');
+}
+
+// ── Sección 3: Capacidad de pago ─────────────────────────
+function renderExpCapacidad(ints) {
+  const el = document.getElementById('exp-body-cap');
+  const ps = ints.map(i=>i.prospectos).filter(Boolean);
+  if (!ps.length) { el.innerHTML='<div style="color:var(--muted);font-size:13px">Sin datos.</div>'; return; }
+
+  const avg = arr => arr.length ? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length) : 0;
+  const ingresos  = avg(ps.map(p=>parseFloat(p.ingresos_semanales)||0));
+  const gastos    = avg(ps.map(p=>parseFloat(p.gastos_semanales)||0));
+  const flujo     = ingresos - gastos;
+  const capacidad = avg(ps.map(p=>parseFloat(p.capacidad_pago)||0));
+  const ratioGI   = ingresos>0?((gastos/ingresos)*100).toFixed(1):'—';
+  const ratioPF   = flujo>0?((capacidad/flujo)*100).toFixed(1):'—';
+  const rGICol    = parseFloat(ratioGI)>80?'var(--red)':parseFloat(ratioGI)>60?'#E0A800':'var(--green)';
+  const rPFCol    = parseFloat(ratioPF)>60?'var(--red)':parseFloat(ratioPF)>40?'#E0A800':'var(--green)';
+
+  el.innerHTML = `
+    <div class="exp-cap-grid">
+      <div class="exp-cap-cell"><div class="exp-cap-lbl">Ingreso semanal (prom.)</div><div class="exp-cap-val">$${ingresos.toLocaleString('es-MX')}</div></div>
+      <div class="exp-cap-cell"><div class="exp-cap-lbl">Gasto semanal (prom.)</div><div class="exp-cap-val">$${gastos.toLocaleString('es-MX')}</div></div>
+      <div class="exp-cap-cell"><div class="exp-cap-lbl">Flujo neto (prom.)</div><div class="exp-cap-val" style="color:${flujo>=0?'var(--green)':'var(--red)'}">$${flujo.toLocaleString('es-MX')}</div></div>
+      <div class="exp-cap-cell"><div class="exp-cap-lbl">Capacidad de pago (prom.)</div><div class="exp-cap-val">$${capacidad.toLocaleString('es-MX')}</div></div>
+    </div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px">
+      <div class="exp-ratio-row"><span>Ratio gasto / ingreso</span><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:${rGICol}">${ratioGI}%</span></div>
+      <div class="exp-ratio-row"><span>Ratio pago / flujo</span><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:${rPFCol}">${ratioPF}%</span></div>
+    </div>`;
+}
+
+// ── Sección 4: Detalle por integrante ─────────────────────
+function renderExpIntegrantes(ints) {
+  const el = document.getElementById('exp-body-ints');
+  if (!ints.length) { el.innerHTML='<div style="color:var(--muted);font-size:13px">Sin integrantes.</div>'; return; }
+
+  el.innerHTML = ints.map((intg,idx)=>{
+    const p = intg.prospectos||{};
+    let cuentas=[]; try { cuentas=JSON.parse(p.cuentas_cdc||'[]'); } catch(e){}
+    let reglas=[];  try { reglas=JSON.parse(p.reglas_postburo||'[]'); } catch(e){}
+
+    const cuentasHTML = cuentas.length
+      ? `<div style="overflow-x:auto"><table style="width:100%;font-size:11px;border-collapse:collapse">
+          <thead><tr style="color:var(--muted)"><th style="text-align:left;padding:4px 6px">Otorgante</th><th style="padding:4px 6px">Saldo</th><th style="padding:4px 6px">Vencido</th><th style="padding:4px 6px">Clave</th></tr></thead>
+          <tbody>${cuentas.map(c=>`<tr style="border-top:1px solid var(--border)">
+            <td style="padding:4px 6px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.otorgante||'—'}</td>
+            <td style="padding:4px 6px;text-align:right;font-family:'IBM Plex Mono',monospace">$${(parseFloat(c.saldo)||0).toLocaleString('es-MX')}</td>
+            <td style="padding:4px 6px;text-align:right;font-family:'IBM Plex Mono',monospace;color:${parseFloat(c.saldo_vencido)>0?'var(--red)':'var(--muted)'}">$${(parseFloat(c.saldo_vencido)||0).toLocaleString('es-MX')}</td>
+            <td style="padding:4px 6px;text-align:center;font-weight:700">${c.situacion||'—'}</td>
+          </tr>`).join('')}</tbody></table></div>`
+      : '<div style="color:var(--muted);font-size:12px">Sin cuentas CDC.</div>';
+
+    const reglasHTML = reglas.length
+      ? reglas.map(r=>`<div style="font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)">${r}</div>`).join('')
+      : '<div style="color:var(--muted);font-size:12px">Sin reglas activadas.</div>';
+
+    return `<div class="exp-int-card" id="expi-${idx}">
+      <div class="exp-int-head" onclick="document.getElementById('expi-${idx}').classList.toggle('open')">
+        <div>
+          <div class="exp-int-name">${p.nombre_completo||'—'}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">Score: <strong style="font-family:'IBM Plex Mono',monospace">${p.score_ipp??'—'}</strong></div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          ${badgeGrado(p.grado_ipp||'—')}
+          ${p.grado_postburo?`<span style="font-size:10px;color:var(--muted)">→</span>${badgeGrado(p.grado_postburo)}`:''}
+        </div>
+        <span style="font-size:11px;color:var(--muted);margin-left:4px">▼</span>
+      </div>
+      <div class="exp-int-body">
+        <div class="exp-int-tabs">
+          <div class="exp-int-tab active" onclick="switchIntTab(${idx},0,this)">Post-buró</div>
+          <div class="exp-int-tab"        onclick="switchIntTab(${idx},1,this)">Score IPP</div>
+          <div class="exp-int-tab"        onclick="switchIntTab(${idx},2,this)">Cuentas CDC</div>
+        </div>
+        <div class="exp-int-tab-body">
+          <div class="active"><div style="font-size:11px;color:var(--muted);margin-bottom:6px">Reglas activadas</div>${reglasHTML}</div>
+          <div>
+            <div class="exp-score-row"><span>Score pre-buró</span><strong style="font-family:'IBM Plex Mono',monospace">${p.score_ipp??'—'}</strong></div>
+            <div class="exp-score-row"><span>Grado pre-buró</span>${badgeGrado(p.grado_ipp||'—')}</div>
+            <div class="exp-score-row"><span>Grado post-buró</span>${p.grado_postburo?badgeGrado(p.grado_postburo):'<span style="color:var(--muted)">Pendiente</span>'}</div>
+            <div class="exp-score-row"><span>Ingresos</span><span style="font-family:'IBM Plex Mono',monospace">$${(parseFloat(p.ingresos_semanales)||0).toLocaleString('es-MX')}/sem</span></div>
+            <div class="exp-score-row"><span>Gastos</span><span style="font-family:'IBM Plex Mono',monospace">$${(parseFloat(p.gastos_semanales)||0).toLocaleString('es-MX')}/sem</span></div>
+            <div class="exp-score-row"><span>Capacidad pago</span><span style="font-family:'IBM Plex Mono',monospace">$${(parseFloat(p.capacidad_pago)||0).toLocaleString('es-MX')}/sem</span></div>
+          </div>
+          <div>${cuentasHTML}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function switchIntTab(idx, tabIdx, el) {
+  const card = document.getElementById(`expi-${idx}`);
+  card.querySelectorAll('.exp-int-tab').forEach((t,i)=>t.classList.toggle('active',i===tabIdx));
+  card.querySelectorAll('.exp-int-tab-body > div').forEach((b,i)=>b.classList.toggle('active',i===tabIdx));
+}
+
+// ── Decisión CS ───────────────────────────────────────────
+function abrirDecisionCS(tipo) {
+  expDecisionTipo = tipo;
+  const isAprobar = tipo === 'aprobar';
+  document.getElementById('modal-decision-title').textContent = isAprobar ? '✓ Aprobar grupo' : '⚑ Solicitar revisión';
+  document.getElementById('modal-decision-sub').textContent   = isAprobar
+    ? 'Confirma tu aprobación con un comentario. Esta acción quedará registrada.'
+    : 'Describe qué aspectos requieren revisión adicional antes de aprobar.';
+  document.getElementById('modal-decision-comentario').value  = '';
+  const btn = document.getElementById('modal-decision-confirm');
+  btn.style.background  = isAprobar ? 'var(--green)' : '#E0A800';
+  btn.style.border      = isAprobar ? '1px solid var(--green)' : '1px solid #E0A800';
+  btn.style.color       = '#fff';
+  document.getElementById('modal-decision-cs').classList.add('show');
+}
+
+function cerrarDecisionCS() {
+  document.getElementById('modal-decision-cs').classList.remove('show');
+  expDecisionTipo = null;
+}
+
+async function confirmarDecisionCS() {
+  const comentario = document.getElementById('modal-decision-comentario').value.trim();
+  if (!comentario) {
+    document.getElementById('modal-decision-comentario').style.borderColor = 'var(--red)';
+    document.getElementById('modal-decision-comentario').focus();
+    return;
+  }
+  document.getElementById('modal-decision-comentario').style.borderColor = '';
+  const btn = document.getElementById('modal-decision-confirm');
+  btn.disabled = true; btn.textContent = 'Guardando…';
+
+  const { error } = await sb.from('decisiones_cs').insert({
+    grupo_id:     expGrupoActual.id,
+    accion:       expDecisionTipo,
+    comentario:   comentario,
+    aplicada_por: currentUser.id,
+  });
+
+  if (error) {
+    toast('Error al guardar: ' + error.message, 'error');
+    btn.disabled = false; btn.textContent = 'Confirmar';
+    return;
+  }
+
+  const nuevoEstatus = expDecisionTipo === 'aprobar' ? 'activo' : 'asignado_cs';
+  await sb.from('grupos').update({ estatus: nuevoEstatus }).eq('id', expGrupoActual.id);
+
+  cerrarDecisionCS();
+  toast(expDecisionTipo === 'aprobar' ? '✓ Grupo aprobado por CS' : '⚑ Revisión solicitada', 'success');
+  await cargarGrupos();
+  cerrarExpediente();
+}
+</script>

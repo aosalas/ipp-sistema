@@ -1282,12 +1282,12 @@ function egRenderResult() {
   const groupHasRedFlag = EG_RF_QS.some(qi => egAnswers[qi]?.val === 'no');
 
   let nivelClass, nivelIcon, nivelTitle, nivelDesc;
-  if (rawScore >= 80 && !groupHasRedFlag) {
+  if (rawScore >= 90 && !groupHasRedFlag) {
     nivelClass = 'eg-nivel-estandar';
     nivelIcon  = '✅';
     nivelTitle = 'Revisión estándar';
     nivelDesc  = 'Pocas alertas detectadas. CS revisa normalmente.';
-  } else if (rawScore < 65) {
+  } else if (rawScore < 70) {
     nivelClass = 'eg-nivel-prioritaria';
     nivelIcon  = '🚩';
     nivelTitle = 'Revisión prioritaria';
@@ -1590,8 +1590,8 @@ async function egGuardarSnapshot() {
   const groupHasRedFlag = EG_RF_QS.some(qi => egAnswers[qi]?.val === 'no');
 
   let nivelRevision;
-  if (rawScore >= 80 && !groupHasRedFlag) nivelRevision = 'estandar';
-  else if (rawScore < 65)                 nivelRevision = 'prioritaria';
+  if (rawScore >= 90 && !groupHasRedFlag) nivelRevision = 'estandar';
+  else if (rawScore < 70)                 nivelRevision = 'prioritaria';
   else                                    nivelRevision = 'atencion';
 
   // Estado por integrante (snapshot legible)
